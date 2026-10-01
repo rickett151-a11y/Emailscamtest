@@ -9,6 +9,8 @@
    Deliberately one light theme so it sits naturally inside a SharePoint page. */
 :root {
   --bg: #e8ecef;
+  --deep: #0a2f3b;
+  --band: linear-gradient(180deg, #13566b 0%, #0f4657 100%);
   --pane: #ffffff;
   --pane-2: #f5f7f9;
   --ink: #1b2733;
@@ -34,12 +36,13 @@
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
-body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--font); padding-inline: 16px; padding-block: 16px 32px; }
+html { min-height: 100%; background: var(--deep); }
+body { min-height: 100%; background: radial-gradient(120% 70% at 50% 0%, #17607a 0%, #0f4657 45%, var(--deep) 100%) fixed var(--deep); color: var(--ink); font: 15px/1.5 var(--font); padding-inline: 16px; padding-block: 16px 32px; }
 [hidden] { display: none !important; }
 button { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 
-.app { max-width: 1100px; margin: 0 auto; background: var(--pane); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; box-shadow: 0 2px 10px rgba(15, 40, 55, .08); }
+.app { max-width: 1100px; margin: 0 auto; background: var(--pane); border: 1px solid rgba(255,255,255,.1); border-radius: 8px; overflow: hidden; box-shadow: 0 16px 50px rgba(0, 0, 0, .35); }
 
 /* App bar */
 .appbar { display: flex; align-items: center; gap: 12px; background: var(--brand); color: var(--brand-ink); padding: 10px 16px; min-height: 52px; }
@@ -72,9 +75,11 @@ button { font: inherit; color: inherit; }
 .stars svg path { transform-origin: 50% 50%; transform-box: fill-box; }
 
 /* Level picker */
-.home { padding: 28px clamp(16px, 4vw, 40px) 32px; }
-.home h2 { font: 700 30px/1.15 var(--font-head); margin: 0 0 6px; letter-spacing: -.01em; }
-.home .intro { color: var(--muted); margin: 0 0 24px; max-width: 62ch; }
+.home-band { background: var(--band); color: #fff; padding: 28px clamp(16px, 4vw, 40px) 26px; }
+.home-band h2 { font: 800 32px/1.1 var(--font-head); margin: 0 0 6px; letter-spacing: -.015em; }
+.home-band h2 span { background: #ffe680; color: #0d2a33; padding: 0 .12em; border-radius: 3px; }
+.home-band .intro { color: rgba(255,255,255,.8); margin: 0; max-width: 62ch; }
+.home-body { padding: 24px clamp(16px, 4vw, 40px) 30px; background: var(--pane-2); }
 .levels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .level { border: 1px solid var(--line); border-radius: 6px; padding: 18px; display: flex; flex-direction: column; gap: 10px; background: var(--pane); }
 .level .top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
@@ -84,9 +89,11 @@ button { font: inherit; color: inherit; }
 .level .best { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .level .resume { font-size: 13px; color: var(--caution); font-weight: 600; }
 .level .btn { width: 100%; }
-.level[data-level="easy"] { border-top: 4px solid #4f9b72; }
-.level[data-level="medium"] { border-top: 4px solid #d29b2a; }
-.level[data-level="hard"] { border-top: 4px solid #b6473a; }
+.level { box-shadow: 0 1px 2px rgba(15,40,55,.06); transition: transform .15s ease, box-shadow .15s ease; }
+.level:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15,40,55,.12); }
+.level[data-level="easy"] { border-top: 4px solid #2e8b6e; }
+.level[data-level="medium"] { border-top: 4px solid #d9a227; }
+.level[data-level="hard"] { border-top: 4px solid #c0533f; }
 .howto { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 28px 0 0; padding: 18px 0 0; border-top: 1px solid var(--line); list-style: none; }
 .howto li { font-size: 13.5px; color: var(--muted); }
 .howto strong { display: block; color: var(--ink); font-size: 14px; }
@@ -124,7 +131,7 @@ button { font: inherit; color: inherit; }
 .act[data-c="trust"] svg { color: var(--safe); }
 .act[data-c="verify"] svg { color: var(--caution); }
 .act[data-c="report"] svg { color: var(--danger); }
-.act:hover { border-color: var(--ink); }
+.act:hover { border-color: var(--brand); background: var(--select); }
 .tip { font-size: 13px; color: var(--muted); padding: 8px 20px; background: var(--pane-2); border-bottom: 1px solid var(--line); }
 
 .result { padding: 14px 20px; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 14px; align-items: center; }
@@ -188,7 +195,7 @@ button { font: inherit; color: inherit; }
 /* Results */
 .done { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 0; }
 .done-main { padding: 32px clamp(16px, 4vw, 40px); }
-.done-main .lvl { font-size: 14px; color: var(--muted); margin: 0 0 6px; }
+.done-main .lvl { font-size: 14px; font-weight: 600; color: var(--brand); margin: 0 0 6px; }
 .score { font: 700 54px/1 var(--font-head); font-variant-numeric: tabular-nums; margin: 14px 0 6px; letter-spacing: -.02em; }
 .score small { font-size: 20px; color: var(--muted); font-weight: 600; }
 .rank { font: 600 19px var(--font-head); margin: 0 0 4px; }
@@ -199,15 +206,16 @@ button { font: inherit; color: inherit; }
 .recap .c { display: block; font-size: 12.5px; color: var(--muted); }
 .recap .p { font-weight: 700; font-variant-numeric: tabular-nums; }
 .done-btns { display: flex; flex-wrap: wrap; gap: 10px; }
-.help { background: var(--pane-2); border-left: 1px solid var(--line); padding: 32px clamp(16px, 3vw, 32px); }
+.help { background: var(--band); color: #fff; border-left: 0; padding: 32px clamp(16px, 3vw, 32px); }
 .help h3 { font: 700 20px/1.25 var(--font-head); margin: 0 0 8px; text-wrap: balance; }
-.help p { margin: 0 0 14px; color: var(--muted); }
+.help p { margin: 0 0 14px; color: rgba(255,255,255,.8); }
 .addr-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 22px; }
-.addr-row a { font: 600 17px var(--mono); color: var(--brand); overflow-wrap: anywhere; }
-.copy { font-size: 13px; padding: 4px 10px; border: 1px solid var(--brand); color: var(--brand); background: var(--pane); border-radius: 4px; cursor: pointer; }
+.addr-row a { font: 600 17px var(--mono); color: #ffe680; overflow-wrap: anywhere; }
+.copy { font-size: 13px; padding: 4px 10px; border: 1px solid #ffe680; color: #ffe680; background: transparent; border-radius: 4px; cursor: pointer; }
+.help :focus-visible { outline-color: #ffe680; }
 .checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; font-size: 14px; }
 .checks li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 8px; }
-.checks svg { margin-top: 3px; color: var(--safe); }
+.checks svg { margin-top: 3px; color: #ffe680; }
 
 /* View transitions */
 .enter { animation: viewin .45s ease both; }
@@ -425,13 +433,16 @@ button { font: inherit; color: inherit; }
     <span class="pts" id="pts" hidden></span>
     <div class="sound"><button class="mute" type="button" data-mute="1" aria-label="Sound on"></button><input type="range" min="0" max="100" step="5" data-vol="1" id="vol-bar" aria-label="Volume"></div>
     <button class="barbtn" type="button" id="to-levels" hidden>Levels</button>
-    <button class="barbtn" type="button" id="to-menu" hidden>Menu</button>
+    <button class="barbtn" type="button" id="to-menu" hidden title="Your progress is saved">Menu</button>
   </header>
 
   <!-- Level picker -->
   <section class="home" id="v-home" hidden>
-    <h2>Can you spot the scam?</h2>
-    <p class="intro">Each level drops five emails in your inbox. Some are fakes and some are real. Check them over, decide what to do with each one, and earn up to three stars.</p>
+    <div class="home-band">
+      <h2>Choose your <span>level</span></h2>
+      <p class="intro">Each level drops five emails in your inbox. Some are fakes and some are real. Check them over, decide what to do with each one, and earn up to three stars.</p>
+    </div>
+    <div class="home-body">
     <div class="levels" id="levels"></div>
     <ul class="howto">
       <li><strong>Check</strong>Tap the sender's name, links and attachments to see what's really behind them. Nothing will open.</li>
@@ -442,6 +453,7 @@ button { font: inherit; color: inherit; }
     <div class="homefoot">
       <span>All emails, people and links in this game are made up. Your progress is saved on this device.</span>
       <span id="reset-wrap"><button class="linkbtn" type="button" id="reset">Clear my scores</button></span>
+    </div>
     </div>
   </section>
 
@@ -1276,7 +1288,7 @@ button { font: inherit; color: inherit; }
     var stage = view === "boot" || view === "menu" || view === "intro";
     $("appbar").hidden = stage;
     $("to-levels").hidden = !(view === "play" || view === "done");
-    $("to-menu").hidden = view !== "home";
+    $("to-menu").hidden = !(view === "home" || view === "play" || view === "done");
     $("pts").hidden = view !== "play";
     if (view !== "play") $("streak").hidden = true;
     if (view === "home") $("where").textContent = "";
