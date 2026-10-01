@@ -276,6 +276,8 @@ button { font: inherit; color: inherit; }
 .menu-stars .star-off { fill: rgba(255,255,255,.25); }
 .howpanel { margin-top: 22px; max-width: 560px; text-align: left; background: rgba(0,0,0,.22); border: 1px solid rgba(255,255,255,.15); border-radius: 6px; padding: 16px 20px; display: grid; gap: 10px; font-size: 14px; color: rgba(255,255,255,.85); animation: viewin .3s ease both; }
 .howpanel strong { color: #fff; }
+.complete { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 18px; padding: 6px 16px; border: 2px solid #ffe680; border-radius: 4px; color: #ffe680; font: 700 15px var(--font-head); letter-spacing: .12em; text-transform: uppercase; animation: pop .5s ease 1.2s backwards; }
+.level .done-tag { font-size: 12px; font-weight: 700; color: var(--safe); white-space: nowrap; }
 .credit { position: absolute; bottom: 16px; left: 0; right: 0; z-index: 1; margin: 0; font-size: 13.5px; color: rgba(255,255,255,.7); letter-spacing: .02em; animation: rise .5s ease 1.5s both; }
 
 /* Level intro */
@@ -368,6 +370,7 @@ button { font: inherit; color: inherit; }
     <div class="floaters" id="floaters" aria-hidden="true"></div>
     <div class="sound"><button class="mute" type="button" data-mute="1" aria-label="Sound on"></button><input type="range" min="0" max="100" step="5" data-vol="1" id="vol-menu" aria-label="Volume"></div>
     <div class="menu-inner">
+      <p class="complete" id="m-complete" hidden><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Complete</p>
       <h2 class="menu-title"><span class="l1">Spot the</span><span class="l2">Scam</span></h2>
       <p class="menu-sub">Cybersecurity Awareness Month. Fifteen emails, three levels. How many fakes can you catch?</p>
       <div class="menu-btns">
@@ -922,6 +925,8 @@ button { font: inherit; color: inherit; }
     $("floaters").innerHTML = f;
     var total = ORDER.reduce(function (s, k) { return s + (store.best[k] != null ? starsFor(store.best[k]) : 0); }, 0);
     $("m-stars").innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path class="' + (total ? "star-on" : "star-off") + '" d="' + STAR + '"/></svg><span>' + total + " of 9 stars earned</span>";
+    // Every level finished at least once: show "Complete" on the title menu.
+    $("m-complete").hidden = !ORDER.every(function (k) { return store.best[k] != null; });
     var run = store.run;
     $("m-continue").hidden = !run;
     if (run) $("m-continue").textContent = "Continue " + LEVELS[run.level].name + " (" + Object.keys(run.picks).length + " of 5)";
@@ -1011,7 +1016,7 @@ button { font: inherit; color: inherit; }
         : starsHtml(0) + "<span>Not played yet</span>";
       var btn = run ? "Continue" : best != null ? "Play again" : "Play " + L.name;
       return '<div class="level" data-level="' + k + '">' +
-        '<div class="top"><h3>' + L.name + '</h3><span class="tag">' + L.tag + "</span></div>" +
+        '<div class="top"><h3>' + L.name + "</h3>" + (best != null ? '<span class="done-tag">✓ Complete</span>' : '<span class="tag">' + L.tag + "</span>") + "</div>" +
         "<p>" + L.blurb + "</p>" +
         '<div class="best">' + bestLine + "</div>" +
         (run ? '<div class="resume">In progress: ' + answered + " of 5 answered</div>" : "") +
