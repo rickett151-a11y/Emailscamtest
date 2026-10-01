@@ -4,31 +4,40 @@ A five-email phishing awareness game for Cybersecurity Awareness Month. Everythi
 
 ## How it plays
 
-1. **Inspect**: tap the sender's name, links and attachments. The Inspector shows the real address, link destination and file type. Nothing opens.
-2. **Choose**: Trust it, Verify another way, or Report to Helpdesk.
+Players pick a level: **Easy**, **Medium** or **Hard**. Each level is five emails in a realistic inbox, shown in a random order.
+
+1. **Check**: click the sender's name to show the full address, hover or click links to see where they really go, and click attachments to see the file type. Nothing opens.
+2. **Decide**: Trust it, Verify another way, or Report to Helpdesk.
 3. **Learn**: the clues are highlighted and numbered on the email, with an explanation.
-4. **Finish**: a score out of 500 after five emails, with the Helpdesk@wfse.org reminder.
+4. **Score**: best choice 100 points, a safe but not ideal choice 50, a risky choice 0. Out of 500 per level: 450+ is 3 stars, 300+ is 2 stars, anything else is 1 star.
 
-Scoring: best choice 100 points, a safe but not ideal choice 50, a risky choice 0.
+Progress is saved after every answer in a cookie (with browser storage as a backup), so players can close the page and come back to finish a level. Best scores and stars are kept for a year. "Clear my scores" on the level screen wipes them. Nothing is sent anywhere.
 
-Each round draws 2 legitimate emails and 3 suspicious ones from a pool of 8, in random order, so replays differ:
+Built for laptop and desktop screens for now.
 
-| Email | Type | Best choice |
-|---|---|---|
-| Microsoft 365 password expiry | Credential phishing | Report |
-| Dana Ortiz shared "Q4 Salary Adjustments.xlsx" | Fake shared document | Report |
-| Pat Morgan, "Quick favor" | Gift card scam | Report |
-| Brightline Supply bank change | Payment change request | Verify |
-| Parcel redelivery fee | Delivery fee scam | Report |
-| Helpdesk Awareness Month announcement | Legitimate | Trust |
-| Expense report approved | Legitimate | Trust |
-| Jordan Lee shared "October volunteer schedule" | Legitimate | Trust |
+| Level | Email | Real or scam | Best choice |
+|---|---|---|---|
+| Easy | "You have been selected to recieve a $500 gift card" | Scam | Report |
+| Easy | "Your mailbox is 99% FULL" from "IT Departmnet" | Scam | Report |
+| Easy | Parcel redelivery fee | Scam | Report |
+| Easy | Expense report approved | Real | Trust |
+| Easy | Helpdesk Awareness Month announcement | Real | Trust |
+| Medium | Microsoft 365 password expiry | Scam | Report |
+| Medium | Pat Morgan, "Quick favor" (gift cards) | Scam | Report |
+| Medium | Dana Ortiz shared "Q4 Salary Adjustments.xlsx" | Scam | Report |
+| Medium | Jordan Lee shared "October volunteer schedule" | Real | Trust |
+| Medium | HR open enrollment announcement | Real | Trust |
+| Hard | Brightline Supply bank change (real vendor address) | Possibly real, high risk | Verify |
+| Hard | VPN re-registration from wfse.co | Scam | Report |
+| Hard | Sam Whitaker reply with a .htm "report" (hacked account) | Scam | Report |
+| Hard | Payroll W-2 choice with a deadline | Real | Trust |
+| Hard | "Please sign" policy from wfse-hr.org | Scam | Report |
 
-All names, vendors and scam domains are fictional. The legitimate emails assume `wfse.org`, `intranet.wfse.org` and `wfse.sharepoint.com`. Adjust these if your real addresses differ.
+All names, vendors and scam domains are fictional. The real emails assume `wfse.org`, `intranet.wfse.org` and `wfse.sharepoint.com`. Adjust these if your real addresses differ.
 
 ## Editing the emails
 
-Open the file in a text editor and find `var EMAILS = [`. Each email has a sender, subject, body, links, the best and acceptable choices, and a list of clues. In the body, `[[key|text]]` makes a link (add `|cta` for a button) and `{{key|text}}` marks a phrase that gets highlighted as a clue. Each clue's `k` matches one of those keys, or `from` for the sender.
+Open the file in a text editor and find `var EMAILS = {`. Each email has a sender, subject, body, links, the best and acceptable choices, and a list of clues. In the body, `[[key|text]]` makes a link (add `|cta` for a button) and `{{key|text}}` marks a phrase that gets highlighted as a clue. Each clue's `k` matches one of those keys, `from` for the sender, or an attachment's key. Which emails belong to which level is set in `var LEVELS`.
 
 ## Putting it on SharePoint
 
@@ -48,4 +57,4 @@ The host's domain must be allowed in the site's **HTML Field Security** list (Si
 
 ## What it doesn't do
 
-Scores aren't saved or sent anywhere. Each person sees only their own result. If you want completion tracking, a simple option is to link a short Microsoft Form from the results screen.
+Scores stay in each player's own browser. Nobody else can see them, and clearing browser data or switching browsers starts fresh. In Safari, embedded pages often can't keep cookies, so progress may not save there. If you want completion tracking, a simple option is to link a short Microsoft Form from the results screen.

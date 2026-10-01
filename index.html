@@ -5,248 +5,232 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Spot the Scam</title>
 <style>
-/* Layout: a mail-client stage. Email on the left, the Inspector and decision panel on the right; stacks to one column on phones.
-   Signature detail: clues get marked with a highlighter stroke after each decision. */
+/* Layout: the game is a working mail client. Level picker, then inbox list + reading pane, then a results card.
+   Deliberately one light theme so it sits naturally inside a SharePoint page. */
 :root {
-  --bg: #eef1f5;
-  --surface: #ffffff;
-  --surface-2: #f6f8fb;
-  --ink: #15202c;
-  --muted: #586675;
-  --line: #d6dde5;
-  --accent: #1d4f91;
-  --accent-ink: #ffffff;
-  --hl-red: #ffe066;
-  --hl-good: #bfeccf;
-  --hl-note: #cfe1fb;
-  --danger: #b3261e;
-  --safe: #1d7a4b;
-  --caution: #8f5b00;
-  --shadow: 0 1px 2px rgba(21, 32, 44, .06), 0 8px 24px rgba(21, 32, 44, .06);
+  --bg: #e8ecef;
+  --pane: #ffffff;
+  --pane-2: #f5f7f9;
+  --ink: #1b2733;
+  --muted: #5d6b78;
+  --line: #d8dfe5;
+  --brand: #0f4657;
+  --brand-hover: #155c71;
+  --brand-ink: #ffffff;
+  --select: #e2eef2;
+  --hl: #ffe680;
+  --hl-good: #c8ebd5;
+  --hl-note: #d6e5f6;
+  --danger: #b42318;
+  --safe: #17784c;
+  --caution: #995a00;
+  --star: #e3a008;
+  --star-empty: #cfd6dc;
 
-  --font-display: "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
-  --font-body: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, "Cascadia Mono", Consolas, "SF Mono", Menlo, monospace;
+  --font: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-head: "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --mono: "Cascadia Mono", Consolas, ui-monospace, "SF Mono", Menlo, monospace;
   color-scheme: light;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0e1319; --surface: #161d26; --surface-2: #1b2430; --ink: #e5eaf0; --muted: #9aa7b4; --line: #2b3643;
-    --accent: #84b3f0; --accent-ink: #0e1319; --hl-red: rgba(255, 212, 64, .34); --hl-good: rgba(92, 214, 146, .28); --hl-note: rgba(120, 170, 240, .3);
-    --danger: #f28b82; --safe: #6fd39c; --caution: #e9b24e; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0e1319; --surface: #161d26; --surface-2: #1b2430; --ink: #e5eaf0; --muted: #9aa7b4; --line: #2b3643;
-  --accent: #84b3f0; --accent-ink: #0e1319; --hl-red: rgba(255, 212, 64, .34); --hl-good: rgba(92, 214, 146, .28); --hl-note: rgba(120, 170, 240, .3);
-  --danger: #f28b82; --safe: #6fd39c; --caution: #e9b24e; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
-  color-scheme: dark;
-}
-
 * { box-sizing: border-box; }
 html, body { margin: 0; }
-body {
-  background: var(--bg); color: var(--ink);
-  font: 15px/1.55 var(--font-body);
-  padding-inline: 16px; padding-block: 0 40px;
-  -webkit-font-smoothing: antialiased;
-}
+body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--font); padding-inline: 16px; padding-block: 16px 32px; }
 [hidden] { display: none !important; }
 button { font: inherit; color: inherit; }
-:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 
-.wrap { max-width: 1120px; margin: 0 auto; }
+.app { max-width: 1100px; margin: 0 auto; background: var(--pane); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; box-shadow: 0 2px 10px rgba(15, 40, 55, .08); }
 
-/* Top bar */
-.topbar {
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px;
-  padding-block: 20px 16px;
-}
-.brand { display: flex; align-items: center; gap: 12px; }
-.brand-mark { width: 36px; height: 36px; flex: none; }
-.brand-name { font: 700 20px/1.1 var(--font-display); letter-spacing: -.01em; margin: 0; }
-.brand-sub { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
-.progress { display: flex; align-items: center; gap: 16px; font-variant-numeric: tabular-nums; }
-.dots { display: flex; gap: 6px; }
-.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--line); }
-.dot.current { background: var(--accent); }
-.dot.best { background: var(--safe); }
-.dot.ok { background: var(--caution); }
-.dot.miss { background: var(--danger); }
-.progress-label { font-size: 13px; color: var(--muted); }
-.score-pill { font-weight: 600; font-size: 13px; padding: 4px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); }
+/* App bar */
+.appbar { display: flex; align-items: center; gap: 12px; background: var(--brand); color: var(--brand-ink); padding: 10px 16px; min-height: 52px; }
+.appbar .logo { width: 28px; height: 28px; flex: none; }
+.appbar h1 { font: 600 17px/1.2 var(--font-head); margin: 0; white-space: nowrap; }
+.appbar .where { font-size: 14px; opacity: .85; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.appbar .spacer { flex: 1; }
+.appbar .pts { font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; background: rgba(255,255,255,.14); padding: 3px 10px; border-radius: 4px; }
+.barbtn { background: transparent; border: 1px solid rgba(255,255,255,.4); color: var(--brand-ink); border-radius: 4px; padding: 4px 10px; font-size: 14px; cursor: pointer; white-space: nowrap; }
+.barbtn:hover { background: rgba(255,255,255,.12); }
+.appbar :focus-visible { outline-color: #fff; }
 
 /* Buttons */
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 11px 20px; border-radius: 8px; border: 1px solid transparent; cursor: pointer;
-  font-weight: 600; font-size: 15px; text-decoration: none;
-  background: var(--accent); color: var(--accent-ink);
-}
-.btn:hover { filter: brightness(1.08); }
-.btn.secondary { background: var(--surface); color: var(--ink); border-color: var(--line); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--brand); background: var(--brand); color: var(--brand-ink); padding: 9px 18px; border-radius: 4px; font-weight: 600; cursor: pointer; }
+.btn:hover { background: var(--brand-hover); }
+.btn.plain { background: var(--pane); color: var(--brand); }
+.btn.plain:hover { background: var(--select); }
+.linkbtn { background: none; border: 0; padding: 0; color: var(--muted); text-decoration: underline; cursor: pointer; font-size: 13px; }
 
-/* Intro */
-.intro {
-  display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 40px; align-items: center;
-  padding-block: 24px 8px;
-}
-.eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--accent); margin: 0 0 10px; }
-.intro h2 { font: 700 clamp(34px, 6vw, 56px)/1.02 var(--font-display); letter-spacing: -.025em; margin: 0 0 16px; text-wrap: balance; }
-.intro h2 .hl { background: linear-gradient(100deg, transparent .2em, var(--hl-red) .3em, var(--hl-red) calc(100% - .2em), transparent calc(100% - .1em)) 0 .62em / 100% .42em no-repeat; }
-.lede { font-size: 17px; color: var(--muted); max-width: 52ch; margin: 0 0 24px; }
-.steps { list-style: none; padding: 0; margin: 0 0 28px; display: grid; gap: 12px; max-width: 52ch; }
-.steps li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; align-items: baseline; }
-.steps .n { font: 700 13px/28px var(--font-mono); width: 28px; height: 28px; text-align: center; border-radius: 50%; border: 1.5px solid var(--line); color: var(--muted); }
-.steps strong { display: block; }
-.steps span.d { color: var(--muted); font-size: 14px; }
-.fine { font-size: 13px; color: var(--muted); margin: 14px 0 0; }
+/* Stars */
+.stars { display: inline-flex; gap: 2px; vertical-align: middle; }
+.stars svg { width: 20px; height: 20px; }
+.stars.big svg { width: 44px; height: 44px; }
+.star-on { fill: var(--star); }
+.star-off { fill: var(--star-empty); }
+.stars.big .star-on { animation: pop .35s ease backwards; }
+.stars.big svg:nth-child(2) .star-on { animation-delay: .2s; }
+.stars.big svg:nth-child(3) .star-on { animation-delay: .4s; }
+@keyframes pop { from { transform: scale(.3); opacity: 0; } 70% { transform: scale(1.15); } to { transform: none; opacity: 1; } }
+.stars svg path { transform-origin: 50% 50%; transform-box: fill-box; }
 
-/* Decorative preview inbox on the intro */
-.preview { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; }
-.preview-row { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--line); }
-.preview-row:last-child { border-bottom: 0; }
-.preview-row .who { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.preview-row .subj { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.preview-row .q { font: 700 13px var(--font-mono); color: var(--muted); border: 1.5px dashed var(--line); border-radius: 6px; padding: 2px 8px; }
+/* Level picker */
+.home { padding: 28px clamp(16px, 4vw, 40px) 32px; }
+.home h2 { font: 700 30px/1.15 var(--font-head); margin: 0 0 6px; letter-spacing: -.01em; }
+.home .intro { color: var(--muted); margin: 0 0 24px; max-width: 62ch; }
+.levels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.level { border: 1px solid var(--line); border-radius: 6px; padding: 18px; display: flex; flex-direction: column; gap: 10px; background: var(--pane); }
+.level .top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.level h3 { font: 700 21px/1.2 var(--font-head); margin: 0; }
+.level .tag { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.level p { margin: 0; color: var(--muted); font-size: 14px; flex: 1; }
+.level .best { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.level .resume { font-size: 13px; color: var(--caution); font-weight: 600; }
+.level .btn { width: 100%; }
+.level[data-level="easy"] { border-top: 4px solid #4f9b72; }
+.level[data-level="medium"] { border-top: 4px solid #d29b2a; }
+.level[data-level="hard"] { border-top: 4px solid #b6473a; }
+.howto { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 28px 0 0; padding: 18px 0 0; border-top: 1px solid var(--line); list-style: none; }
+.howto li { font-size: 13.5px; color: var(--muted); }
+.howto strong { display: block; color: var(--ink); font-size: 14px; }
+.homefoot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 24px; font-size: 13.5px; color: var(--muted); }
+.confirm { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.confirm button { font-size: 13px; padding: 4px 10px; border-radius: 4px; border: 1px solid var(--line); background: var(--pane); cursor: pointer; }
+.confirm button.danger { border-color: var(--danger); color: var(--danger); }
 
-/* Avatars */
-.avatar { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 13px; color: #fff; flex: none; }
+/* Mail client */
+.client { display: grid; grid-template-columns: 300px minmax(0, 1fr); min-height: 620px; }
+.list { border-right: 1px solid var(--line); background: var(--pane-2); min-width: 0; }
+.list-head { display: flex; justify-content: space-between; align-items: baseline; padding: 14px 16px 10px; border-bottom: 1px solid var(--line); }
+.list-head h2 { font: 600 16px var(--font-head); margin: 0; }
+.list-head span { font-size: 13px; color: var(--muted); }
+.rows { list-style: none; margin: 0; padding: 0; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; width: 100%; text-align: left; background: transparent; border: 0; border-bottom: 1px solid var(--line); border-left: 3px solid transparent; padding: 11px 14px 11px 13px; cursor: pointer; }
+.row:hover { background: var(--pane); }
+.row.open { background: var(--select); border-left-color: var(--brand); }
+.row .who { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row.unread .who, .row.unread .subj { font-weight: 700; }
+.row.unread .who::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--brand); margin-right: 7px; vertical-align: 2px; }
+.row .when { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.row .subj { grid-column: 1 / -1; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .prev { grid-column: 1; font-size: 12.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .res { grid-column: 2; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.res.best { color: var(--safe); }
+.res.ok { color: var(--caution); }
+.res.miss { color: var(--danger); }
 
-/* Play layout */
-.play { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 20px; align-items: start; }
-.mail { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); min-width: 0; overflow: hidden; }
-.mail-head { padding: 22px 24px 16px; border-bottom: 1px solid var(--line); }
-.subject { font: 600 21px/1.3 var(--font-display); margin: 0 0 16px; letter-spacing: -.01em; text-wrap: balance; overflow-wrap: anywhere; }
-.from-row { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 12px; align-items: center; }
-.from-meta { min-width: 0; }
-.sender {
-  background: none; border: 0; padding: 0; cursor: pointer; font-weight: 600; text-align: left;
-  border-bottom: 1.5px dotted var(--muted); overflow-wrap: anywhere;
-}
-.sender:hover { color: var(--accent); border-bottom-color: var(--accent); }
-.to { display: block; font-size: 13px; color: var(--muted); }
-.time { font-size: 13px; color: var(--muted); white-space: nowrap; }
-.attachments { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-.attachment {
-  display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer;
-  background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; font-size: 13px; max-width: 100%;
-}
-.attachment span { overflow-wrap: anywhere; text-align: left; }
-.attachment:hover { border-color: var(--accent); }
-.mail-body { padding: 20px 24px 8px; overflow-wrap: anywhere; }
-.mail-body p { margin: 0 0 14px; max-width: 64ch; }
-.mail-body .quote { border-left: 3px solid var(--line); padding-left: 12px; color: var(--muted); font-style: italic; }
-.mail-body .small { font-size: 12.5px; color: var(--muted); }
-.mail-body .mono, .mono { font-family: var(--font-mono); font-size: .92em; }
-.mail-body .account { font-family: var(--font-mono); font-size: 13.5px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; display: inline-block; }
-.doc-card { display: inline-flex; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); font-weight: 600; max-width: 100%; }
-.doc-card svg { flex: none; }
-.inline-link {
-  background: none; border: 0; padding: 0; cursor: pointer; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; text-align: left;
-}
-.inline-link.cta {
-  text-decoration: none; background: var(--accent); color: var(--accent-ink); padding: 10px 18px; border-radius: 6px; font-weight: 600;
-}
-.statusbar {
-  margin: 4px 0 0; padding: 8px 24px; border-top: 1px solid var(--line); background: var(--surface-2);
-  font: 12.5px/1.4 var(--font-mono); color: var(--muted); min-height: 36px; overflow-wrap: anywhere;
-}
-.statusbar b { color: var(--ink); }
+.reader { min-width: 0; display: flex; flex-direction: column; }
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 20px; border-bottom: 1px solid var(--line); background: var(--pane); }
+.toolbar .ask { font-size: 14px; font-weight: 600; width: 100%; }
+.act { display: inline-flex; align-items: center; gap: 7px; padding: 7px 13px; border: 1px solid var(--line); background: var(--pane); border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 600; }
+.act svg { width: 16px; height: 16px; flex: none; }
+.act[data-c="trust"] svg { color: var(--safe); }
+.act[data-c="verify"] svg { color: var(--caution); }
+.act[data-c="report"] svg { color: var(--danger); }
+.act:hover { border-color: var(--ink); }
+.tip { font-size: 13px; color: var(--muted); padding: 8px 20px; background: var(--pane-2); border-bottom: 1px solid var(--line); }
 
-/* Clue marks, applied after a decision */
-.mark { position: relative; border-radius: 3px; box-decoration-break: clone; -webkit-box-decoration-break: clone; padding: 0 2px; transition: background-color .4s ease; }
-.mark.red { background: var(--hl-red); }
-.mark.good { background: var(--hl-good); }
-.mark.note { background: var(--hl-note); }
-.inline-link.cta.mark { outline: 3px solid var(--hl-red); outline-offset: 3px; }
-.inline-link.cta.mark.good { outline-color: var(--hl-good); }
-.badge {
-  display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; margin-left: 4px;
-  font: 700 11px/1 var(--font-mono); vertical-align: 2px; background: var(--ink); color: var(--surface); font-style: normal;
-}
+.result { padding: 14px 20px; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 14px; align-items: center; }
+.result .mark-ico { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; color: #fff; grid-row: span 2; }
+.result.best { background: #eaf6ef; } .result.best .mark-ico { background: var(--safe); }
+.result.ok { background: #fbf3e4; } .result.ok .mark-ico { background: var(--caution); }
+.result.miss { background: #fbeceb; } .result.miss .mark-ico { background: var(--danger); }
+.result .verdict { font: 700 17px/1.25 var(--font-head); margin: 0; }
+.result .sub { font-size: 13.5px; color: var(--muted); margin: 0; }
 
-/* Side panel */
-.side { display: grid; gap: 16px; min-width: 0; }
-.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; min-width: 0; }
-.panel h3 { font: 600 13px/1.2 var(--font-body); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 10px; display: flex; align-items: center; gap: 8px; }
-.hint { font-size: 14px; color: var(--muted); margin: 0; }
-.log { display: grid; gap: 10px; margin: 12px 0 0; padding: 0; list-style: none; }
-.log li { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--surface-2); min-width: 0; animation: slide .25s ease; }
-.log .what { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
-.log dl { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 10px; font-size: 13px; }
-.log dt { color: var(--muted); }
-.log dd { margin: 0; font-family: var(--font-mono); overflow-wrap: anywhere; }
-.log dd b { background: var(--hl-note); padding: 0 2px; border-radius: 2px; }
-@keyframes slide { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+.msg { padding: 20px 24px 8px; overflow-wrap: anywhere; flex: 1; }
+.subject { font: 600 20px/1.3 var(--font-head); margin: 0 0 14px; text-wrap: balance; }
+.from { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; gap: 12px; align-items: center; margin-bottom: 4px; }
+.avatar { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 15px; }
+.sender { background: none; border: 0; padding: 0; cursor: pointer; font-weight: 600; text-align: left; font-size: 15px; }
+.sender:hover .name { text-decoration: underline; }
+.sender .addr { font-weight: 400; color: var(--muted); font-family: var(--mono); font-size: 13px; }
+.sender .addr b { color: var(--ink); }
+.sender .peek { font-weight: 400; font-size: 12px; color: var(--brand); margin-left: 6px; text-decoration: underline; }
+.to { font-size: 13px; color: var(--muted); display: block; }
+.from .time { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.atts { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 4px 50px; }
+.att { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 4px; background: var(--pane-2); font-size: 13px; cursor: pointer; max-width: 100%; text-align: left; }
+.att:hover { border-color: var(--ink); }
+.body { margin: 18px 0 0 50px; max-width: 66ch; }
+.body p { margin: 0 0 13px; }
+.body .quote { border-left: 3px solid var(--line); padding-left: 12px; color: var(--muted); font-style: italic; }
+.body .small { font-size: 12.5px; color: var(--muted); }
+.body .earlier { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 10px; }
+.mono { font-family: var(--mono); font-size: .92em; }
+.acct { display: inline-block; font-family: var(--mono); font-size: 13.5px; background: var(--pane-2); border: 1px solid var(--line); padding: 8px 12px; border-radius: 4px; }
+.doc { display: inline-flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 4px; background: var(--pane-2); font-weight: 600; max-width: 100%; }
+.doc svg { flex: none; }
+.ln { background: none; border: 0; padding: 0; color: #0b63a8; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; text-align: left; }
+.ln.cta { background: #0b63a8; color: #fff; text-decoration: none; padding: 9px 18px; border-radius: 3px; font-weight: 600; }
+.status { font: 12.5px/1.4 var(--mono); color: var(--muted); padding: 7px 24px; border-top: 1px solid var(--line); background: var(--pane-2); min-height: 33px; overflow-wrap: anywhere; }
+.status b { color: var(--ink); }
 
-.choices { display: grid; gap: 10px; }
-.choice {
-  display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 12px; align-items: center; text-align: left;
-  padding: 12px 14px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--surface); cursor: pointer;
-}
-.choice:hover:not(:disabled) { border-color: var(--accent); }
-.choice:disabled { cursor: default; opacity: .55; }
-.choice.picked { opacity: 1; border-color: var(--ink); }
-.choice .ico { width: 36px; height: 36px; border-radius: 8px; display: grid; place-items: center; }
-.choice[data-c="trust"] .ico { background: color-mix(in srgb, var(--safe) 16%, transparent); color: var(--safe); }
-.choice[data-c="verify"] .ico { background: color-mix(in srgb, var(--caution) 16%, transparent); color: var(--caution); }
-.choice[data-c="report"] .ico { background: color-mix(in srgb, var(--danger) 14%, transparent); color: var(--danger); }
-.choice strong { display: block; font-size: 15px; }
-.choice span.d { display: block; font-size: 13px; color: var(--muted); }
-
-.feedback { border-width: 2px; }
-.feedback.best { border-color: var(--safe); }
-.feedback.ok { border-color: var(--caution); }
-.feedback.miss { border-color: var(--danger); }
-.verdict { font: 700 22px/1.2 var(--font-display); margin: 0 0 4px; letter-spacing: -.01em; }
-.feedback.best .verdict { color: var(--safe); }
-.feedback.ok .verdict { color: var(--caution); }
-.feedback.miss .verdict { color: var(--danger); }
-.points { font: 600 13px var(--font-mono); color: var(--muted); margin: 0 0 12px; }
-.feedback .explain { margin: 0 0 14px; font-size: 14.5px; }
-.clues { margin: 0 0 16px; padding: 0; list-style: none; display: grid; gap: 10px; }
-.clues li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; font-size: 14px; }
-.clues .badge { margin: 2px 0 0; width: 22px; height: 22px; font-size: 12px; }
-.clues li.red .badge { background: var(--hl-red); color: var(--ink); }
-.clues li.good .badge { background: var(--hl-good); color: var(--ink); }
-.clues li.note .badge { background: var(--hl-note); color: var(--ink); }
-.clues strong { display: block; }
-.clues span { color: var(--muted); }
-.feedback .btn { width: 100%; }
+/* Clue marks after answering */
+.hit { border-radius: 2px; padding: 0 1px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.hit.red { background: var(--hl); }
+.hit.good { background: var(--hl-good); }
+.hit.note { background: var(--hl-note); }
+.ln.cta.hit { outline: 3px solid var(--hl); outline-offset: 2px; background: #0b63a8; }
+.ln.cta.hit.good { outline-color: var(--hl-good); }
+.num { display: inline-grid; place-items: center; min-width: 17px; height: 17px; padding: 0 4px; margin-left: 3px; border-radius: 9px; background: var(--ink); color: #fff; font: 700 10.5px/1 var(--mono); font-style: normal; vertical-align: 2px; }
+.clues { margin: 6px 24px 0 74px; padding: 16px 0 0; border-top: 1px solid var(--line); }
+.clues h3 { font: 600 15px var(--font-head); margin: 0 0 10px; }
+.clues p.why { margin: 0 0 14px; max-width: 66ch; }
+.clues ol { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 10px; max-width: 66ch; }
+.clues li { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 10px; font-size: 14px; }
+.clues li .num { margin: 2px 0 0; color: var(--ink); min-width: 22px; height: 22px; font-size: 11.5px; border-radius: 11px; }
+.clues li.red .num { background: var(--hl); }
+.clues li.good .num { background: var(--hl-good); }
+.clues li.note .num { background: var(--hl-note); }
+.clues li span { color: var(--muted); }
+.clues .next { margin-bottom: 22px; }
 
 /* Results */
-.results { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; padding-block: 8px; }
-.score-card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 28px; box-shadow: var(--shadow); }
-.big { font: 700 clamp(48px, 9vw, 72px)/1 var(--font-display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; margin: 6px 0 4px; }
-.big small { font-size: .4em; color: var(--muted); font-weight: 600; letter-spacing: 0; }
-.rank { font: 600 20px var(--font-display); margin: 0 0 8px; }
-.recap { list-style: none; margin: 20px 0 24px; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
-.recap li { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
-.recap .s { overflow-wrap: anywhere; }
-.recap .c { font-size: 12.5px; color: var(--muted); display: block; }
-.recap .p { font: 600 13px var(--font-mono); font-variant-numeric: tabular-nums; }
-.helpdesk { background: var(--accent); color: var(--accent-ink); border-radius: 12px; padding: 28px; }
-.helpdesk h3 { font: 700 24px/1.2 var(--font-display); margin: 0 0 10px; letter-spacing: -.01em; text-wrap: balance; }
-.helpdesk p { margin: 0 0 16px; }
-.addr { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 22px; }
-.addr a { font: 600 18px var(--font-mono); color: inherit; overflow-wrap: anywhere; }
-.copy { background: transparent; color: inherit; border: 1.5px solid currentColor; border-radius: 6px; padding: 5px 12px; font-size: 13px; font-weight: 600; cursor: pointer; }
-.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 14px; }
-.checks li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; }
-.checks li::before { content: ""; width: 10px; height: 10px; margin-top: 6px; border: 2px solid currentColor; border-radius: 2px; }
-.again { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; }
+.done { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 0; }
+.done-main { padding: 32px clamp(16px, 4vw, 40px); }
+.done-main .lvl { font-size: 14px; color: var(--muted); margin: 0 0 6px; }
+.score { font: 700 54px/1 var(--font-head); font-variant-numeric: tabular-nums; margin: 14px 0 6px; letter-spacing: -.02em; }
+.score small { font-size: 20px; color: var(--muted); font-weight: 600; }
+.rank { font: 600 19px var(--font-head); margin: 0 0 4px; }
+.newbest { display: inline-block; font-size: 12.5px; font-weight: 700; color: var(--safe); background: #eaf6ef; padding: 2px 8px; border-radius: 3px; margin-left: 6px; vertical-align: 3px; }
+.done-main .note { color: var(--muted); margin: 0 0 18px; max-width: 52ch; }
+.recap { list-style: none; margin: 0 0 22px; padding: 0; border-top: 1px solid var(--line); }
+.recap li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.recap .c { display: block; font-size: 12.5px; color: var(--muted); }
+.recap .p { font-weight: 700; font-variant-numeric: tabular-nums; }
+.done-btns { display: flex; flex-wrap: wrap; gap: 10px; }
+.help { background: var(--pane-2); border-left: 1px solid var(--line); padding: 32px clamp(16px, 3vw, 32px); }
+.help h3 { font: 700 20px/1.25 var(--font-head); margin: 0 0 8px; text-wrap: balance; }
+.help p { margin: 0 0 14px; color: var(--muted); }
+.addr-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 22px; }
+.addr-row a { font: 600 17px var(--mono); color: var(--brand); overflow-wrap: anywhere; }
+.copy { font-size: 13px; padding: 4px 10px; border: 1px solid var(--brand); color: var(--brand); background: var(--pane); border-radius: 4px; cursor: pointer; }
+.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; font-size: 14px; }
+.checks li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 8px; }
+.checks svg { margin-top: 3px; color: var(--safe); }
 
-@media (max-width: 860px) {
-  .intro, .play, .results { grid-template-columns: minmax(0, 1fr); }
-  .intro { gap: 28px; }
+@media (max-width: 900px) {
+  .levels { grid-template-columns: minmax(0, 1fr); }
+  .howto { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .done { grid-template-columns: minmax(0, 1fr); }
+  .help { border-left: 0; border-top: 1px solid var(--line); }
 }
-@media (max-width: 480px) {
-  .mail-head, .mail-body { padding-inline: 16px; }
-  .statusbar { padding-inline: 16px; }
-  .from-row { grid-template-columns: 34px minmax(0, 1fr); }
-  .from-row .time { grid-column: 2; }
+@media (max-width: 760px) {
+  body { padding-block: 0 24px; padding-inline: 0; }
+  .app { border-radius: 0; border-inline: 0; }
+  .home { padding-inline: 16px; }
+  .client { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .list { border-right: 0; }
+  .toolbar { padding-inline: 16px; }
+  .tip { padding-inline: 16px; }
+  .msg { padding-inline: 16px; }
+  .body, .atts { margin-left: 0; }
+  .clues { margin-left: 16px; margin-right: 16px; }
+  .status { padding-inline: 16px; }
+  .from { grid-template-columns: 38px minmax(0, 1fr); }
+  .from .time { grid-column: 2; }
+  .appbar .where { display: none; }
+}
+@media (max-width: 420px) {
+  .howto { grid-template-columns: minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -254,212 +238,122 @@ button { font: inherit; color: inherit; }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header class="topbar">
-    <div class="brand">
-      <svg class="brand-mark" viewBox="0 0 36 36" aria-hidden="true">
-        <rect x="2" y="7" width="26" height="19" rx="3" fill="none" stroke="var(--ink)" stroke-width="2.2"/>
-        <path d="M3 9l12 9 12-9" fill="none" stroke="var(--ink)" stroke-width="2.2" stroke-linejoin="round"/>
-        <circle cx="25" cy="23" r="7" fill="var(--hl-red)" stroke="var(--ink)" stroke-width="2.2"/>
-        <path d="M30 28l4.5 4.5" stroke="var(--ink)" stroke-width="2.6" stroke-linecap="round"/>
-      </svg>
-      <div>
-        <h1 class="brand-name">Spot the Scam</h1>
-        <div class="brand-sub">Cybersecurity Awareness Month</div>
-      </div>
-    </div>
-    <div class="progress" id="progress" hidden>
-      <span class="progress-label" id="progress-label">Email 1 of 5</span>
-      <div class="dots" id="dots"></div>
-      <span class="score-pill" id="score-pill">0 pts</span>
-    </div>
+<div class="app">
+  <header class="appbar">
+    <svg class="logo" viewBox="0 0 28 28" aria-hidden="true">
+      <rect x="1.5" y="5" width="20" height="15" rx="2" fill="none" stroke="#fff" stroke-width="2"/>
+      <path d="M2.5 6.5l9 7 9-7" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="19.5" cy="18.5" r="5" fill="#ffe680" stroke="#fff" stroke-width="2"/>
+      <path d="M23 22l3.5 3.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+    </svg>
+    <h1>Spot the Scam</h1>
+    <span class="where" id="where"></span>
+    <span class="spacer"></span>
+    <span class="pts" id="pts" hidden></span>
+    <button class="barbtn" type="button" id="to-levels" hidden>Levels</button>
   </header>
 
-  <!-- Intro -->
-  <main id="screen-intro">
-    <section class="intro">
-      <div>
-        <p class="eyebrow">A five-email training game</p>
-        <h2>Some of these emails are <span class="hl">scams.</span> Can you tell which?</h2>
-        <p class="lede">Five emails are waiting in your inbox. A few are fakes, and a few are perfectly real. Look closely, make a call on each one, and see how your judgment holds up.</p>
-        <ol class="steps">
-          <li><span class="n">1</span><div><strong>Inspect</strong><span class="d">Tap the sender, links and attachments to see what is really behind them.</span></div></li>
-          <li><span class="n">2</span><div><strong>Choose</strong><span class="d">Trust it, verify it another way, or report it to Helpdesk.</span></div></li>
-          <li><span class="n">3</span><div><strong>Learn</strong><span class="d">Get instant feedback with every clue marked on the email.</span></div></li>
-          <li><span class="n">4</span><div><strong>Finish</strong><span class="d">See your score out of 500 after five emails.</span></div></li>
-        </ol>
-        <button class="btn" id="start" type="button">Open the inbox</button>
-        <p class="fine">Every email, name and link in this game is fictional. Nothing you click leaves this page.</p>
-      </div>
-      <div class="preview" aria-hidden="true">
-        <div class="preview-row"><span class="avatar" style="background:#5b6b8c">M</span><div><div class="who">Microsoft 365 Admin</div><div class="subj">Action required: your password expires in 2 hours</div></div><span class="q">?</span></div>
-        <div class="preview-row"><span class="avatar" style="background:#2f7d6d">H</span><div><div class="who">WFSE Helpdesk</div><div class="subj">October is Cybersecurity Awareness Month</div></div><span class="q">?</span></div>
-        <div class="preview-row"><span class="avatar" style="background:#9a5b2e">P</span><div><div class="who">Pat Morgan</div><div class="subj">Quick favor</div></div><span class="q">?</span></div>
-        <div class="preview-row"><span class="avatar" style="background:#6b4f9a">D</span><div><div class="who">Dana Ortiz (via Docs Share)</div><div class="subj">Dana Ortiz shared "Q4 Salary Adjustments.xlsx"</div></div><span class="q">?</span></div>
-        <div class="preview-row"><span class="avatar" style="background:#3c6e9f">F</span><div><div class="who">WFSE Finance</div><div class="subj">Expense report EXP-4471 approved</div></div><span class="q">?</span></div>
-      </div>
-    </section>
-  </main>
+  <!-- Level picker -->
+  <section class="home" id="v-home">
+    <h2>Can you spot the scam?</h2>
+    <p class="intro">Each level drops five emails in your inbox. Some are fakes and some are real. Check them over, decide what to do with each one, and earn up to three stars.</p>
+    <div class="levels" id="levels"></div>
+    <ul class="howto">
+      <li><strong>Check</strong>Tap the sender's name, links and attachments to see what's really behind them. Nothing will open.</li>
+      <li><strong>Decide</strong>Trust it, verify it another way, or report it to Helpdesk.</li>
+      <li><strong>Learn</strong>Every clue gets marked on the email with a short explanation.</li>
+      <li><strong>Score</strong>100 points for the best call, 50 for a safe one. 450+ earns three stars.</li>
+    </ul>
+    <div class="homefoot">
+      <span>All emails, people and links in this game are made up. Your progress is saved on this device.</span>
+      <span id="reset-wrap"><button class="linkbtn" type="button" id="reset">Clear my scores</button></span>
+    </div>
+  </section>
 
-  <!-- Play -->
-  <main id="screen-play" hidden>
-    <section class="play">
-      <article class="mail" id="mail" aria-live="polite"></article>
-      <aside class="side">
-        <div class="panel" id="inspector">
-          <h3>
-            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 10l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            Inspector
-          </h3>
-          <p class="hint" id="inspect-hint">Tap the sender's name, any link or any attachment to see what is really behind it. Nothing opens.</p>
-          <ul class="log" id="log"></ul>
-        </div>
-        <div class="panel" id="choose">
-          <h3>What will you do?</h3>
-          <div class="choices">
-            <button class="choice" type="button" data-c="trust">
-              <span class="ico"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-              <span><strong>Trust it</strong><span class="d">It's legitimate. Carry on as normal.</span></span>
-            </button>
-            <button class="choice" type="button" data-c="verify">
-              <span class="ico"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M6 3h3l1.5 4-2 1.3a9 9 0 004.2 4.2L14 10.5l4 1.5v3a2 2 0 01-2 2A14 14 0 013 5a2 2 0 012-2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></span>
-              <span><strong>Verify another way</strong><span class="d">Check with the sender using a phone number or chat you already have.</span></span>
-            </button>
-            <button class="choice" type="button" data-c="report">
-              <span class="ico"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 18V3m0 1h10l-2.5 4L15 12H5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-              <span><strong>Report to Helpdesk</strong><span class="d">Don't click or reply. Send it to Helpdesk.</span></span>
-            </button>
-          </div>
-        </div>
-        <div class="panel feedback" id="feedback" hidden aria-live="polite"></div>
-      </aside>
-    </section>
-  </main>
+  <!-- Inbox -->
+  <section class="client" id="v-play" hidden>
+    <nav class="list" aria-label="Inbox">
+      <div class="list-head"><h2>Inbox</h2><span id="unread"></span></div>
+      <ul class="rows" id="rows"></ul>
+    </nav>
+    <article class="reader" id="reader" aria-live="polite"></article>
+  </section>
 
   <!-- Results -->
-  <main id="screen-results" hidden>
-    <section class="results">
-      <div class="score-card">
-        <p class="eyebrow">Your score</p>
-        <div class="big" id="final-score">0<small> / 500</small></div>
-        <p class="rank" id="rank"></p>
-        <p class="hint" id="rank-note"></p>
-        <ul class="recap" id="recap"></ul>
-        <div class="again">
-          <button class="btn secondary" type="button" id="again">Play again with new emails</button>
-        </div>
+  <section class="done" id="v-done" hidden>
+    <div class="done-main">
+      <p class="lvl" id="d-level"></p>
+      <div class="stars big" id="d-stars"></div>
+      <div class="score" id="d-score"></div>
+      <p class="rank" id="d-rank"></p>
+      <p class="note" id="d-note"></p>
+      <ul class="recap" id="d-recap"></ul>
+      <div class="done-btns">
+        <button class="btn" type="button" id="d-next"></button>
+        <button class="btn plain" type="button" id="d-again">Play this level again</button>
       </div>
-      <div class="helpdesk">
-        <h3>Not sure about an email? Don't guess. Ask Helpdesk.</h3>
-        <p>Forward anything suspicious, or reach out before you click, reply or pay. Asking is always the right call.</p>
-        <div class="addr">
-          <a href="mailto:Helpdesk@wfse.org" id="addr">Helpdesk@wfse.org</a>
-          <button class="copy" type="button" id="copy">Copy address</button>
-        </div>
-        <ul class="checks">
-          <li>Check the sender's full address, not just the name.</li>
-          <li>Preview where a link really goes before you click.</li>
-          <li>Slow down when a message is urgent, secret or about money.</li>
-          <li>Verify requests using contact details you already have.</li>
-          <li>Never enter your password from a link in an email.</li>
-        </ul>
+    </div>
+    <aside class="help">
+      <h3>Not sure about an email? Ask before you click.</h3>
+      <p>Forward anything suspicious to Helpdesk, or reach out before you click, reply, sign in or pay. Nobody minds being asked.</p>
+      <div class="addr-row">
+        <a href="mailto:Helpdesk@wfse.org" id="addr">Helpdesk@wfse.org</a>
+        <button class="copy" type="button" id="copy">Copy</button>
       </div>
-    </section>
-  </main>
+      <ul class="checks" id="checks"></ul>
+    </aside>
+  </section>
 </div>
 
 <script>
 (function () {
   "use strict";
 
-  // Scenario format:
-  //   body tokens: [[key|link text]] or [[key|button text|cta]] for links, {{key|text}} for phrases that get marked as clues.
-  //   best: the ideal action; ok: actions that are safe but not ideal (half points).
-  //   clues: flag is "red" (warning sign), "good" (reassuring sign) or "note" (worth knowing).
-  var EMAILS = [
-    {
-      id: "m365", legit: false, kind: "Credential phishing",
-      fromName: "Microsoft 365 Admin", fromAddr: "admin-notice@wfse-org-mail.com", color: "#5b6b8c",
-      subject: "Action required: your password expires in 2 hours", time: "8:02 AM",
-      links: { link: "http://wfse-org-mail.com.login-verify.co/m365/keep-password" },
+  /* ---------- Emails ----------
+     Body tokens: [[key|link text]] or [[key|button text|cta]] make a link; {{key|text}} marks a phrase as a clue.
+     best = ideal choice (100 pts); ok = safe but not ideal (50 pts); anything else 0.
+     Clue flags: red = warning sign, good = reassuring sign, note = worth knowing. */
+  var EMAILS = {
+    /* ----- Easy ----- */
+    prize: {
+      fromName: "WFSE Rewards Team", fromAddr: "winner@claim-your-prize-now.biz", color: "#8b4a8f",
+      subject: "CONGRATULATIONS!!! You have been selected to recieve a $500 gift card", time: "7:12 AM",
+      links: { link: "http://claim-your-prize-now.biz/wfse/claim.php" },
       body:
-        "<p>Hello,</p>" +
-        "<p>Your Microsoft 365 password is set to expire {{urgent|today within 2 hours}}. To avoid losing access to Outlook, Teams and OneDrive, keep your current password now.</p>" +
-        "<p>[[link|Keep current password|cta]]</p>" +
-        "<p>{{threat|Failure to verify will result in your mailbox being suspended and your data deleted.}}</p>" +
-        "<p>Microsoft 365 Admin Team<br>IT Security Department</p>",
-      best: "report", ok: ["verify"],
-      explain: "This is credential phishing. The page behind the button is built to capture your password. Report it, and if you already entered your password, contact Helpdesk right away.",
+        "<p>{{typos|Dear Valued Employe,}}</p>" +
+        "<p>{{won|You have been randomly selected as the winner of our monthly employee raffle!!}} To claim you're $500 gift card, {{info|just confirm your full name, home address, date of birth and bank card number}} on our secure claim page.</p>" +
+        "<p>[[link|CLAIM MY PRIZE NOW|cta]]</p>" +
+        "<p>Offer expires in 12 hours. Unclaimed prizes will be given to another winner.</p>" +
+        "<p>Best Regards,<br>Rewards Department</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "This is a fake prize scam. There is no raffle. The goal is to collect enough personal and card details to steal your money or identity.",
       clues: [
-        { k: "from", flag: "red", title: "Lookalike sender domain", text: "The address ends in wfse-org-mail.com, not wfse.org. Anyone can register a domain that looks close to ours." },
-        { k: "link", flag: "red", title: "The link goes somewhere else", text: "Read a web address from right to left up to the first single slash. This one really belongs to login-verify.co." },
-        { k: "urgent", flag: "red", title: "Made-up urgency", text: "A two-hour deadline is meant to rush you past your judgment." },
-        { k: "threat", flag: "red", title: "A threat of loss", text: "Real IT notices don't threaten to delete your data. Password changes happen through the normal sign-in screen." }
+        { k: "from", flag: "red", t: "A sender that isn't WFSE", d: "Our emails come from wfse.org. This one comes from claim-your-prize-now.biz." },
+        { k: "typos", flag: "red", t: "Spelling mistakes", d: "“Employe”, “recieve” and “you're” instead of “your”. Messages to all staff are usually proofread." },
+        { k: "won", flag: "red", t: "A prize you never entered", d: "If it sounds too good to be true and you didn't sign up for anything, it's bait." },
+        { k: "info", flag: "red", t: "Asks for personal and card details", d: "No real prize needs your date of birth and bank card number." },
+        { k: "link", flag: "red", t: "The link goes to the same strange site", d: "Tap it and the bar at the bottom shows claim-your-prize-now.biz." }
       ]
     },
-    {
-      id: "shared-doc", legit: false, kind: "Fake shared document",
-      fromName: "Dana Ortiz (via Docs Share)", fromAddr: "notify@docshare-files.net", color: "#6b4f9a",
-      subject: "Dana Ortiz shared “Q4 Salary Adjustments.xlsx” with you", time: "Yesterday",
-      links: { link: "https://docshare-files.net/auth/office365/signin?doc=Q4-salary-adjustments" },
+    mailbox: {
+      fromName: "IT Departmnet", fromAddr: "support@mailbox-storage-alert.xyz", color: "#5b6b8c",
+      subject: "Your mailbox is 99% FULL - incoming emails will be deleted", time: "Yesterday",
+      links: { link: "http://mailbox-storage-alert.xyz/upgrade/login" },
       body:
-        "<p><strong>Dana Ortiz</strong> shared a file with you.</p>" +
-        "<p class=\"quote\">{{lure|“Please review your adjustment before it's finalized. Confidential.”}}</p>" +
-        "<p><span class=\"doc-card\">" + docIcon("#1d7a4b") + "Q4 Salary Adjustments.xlsx</span></p>" +
-        "<p>[[link|Open|cta]]</p>" +
-        "<p class=\"small\">You're receiving this because Dana Ortiz shared a file with you. {{expire|This link expires in 24 hours.}}</p>",
-      best: "report", ok: ["verify"],
-      explain: "Unexpected shared files are one of the most common ways attackers steal passwords. If you think Dana might really have sent something, ask Dana directly in Teams or by phone, not by replying to this email.",
+        "<p>{{generic|Attention User,}}</p>" +
+        "<p>Your mailbox has exceeded the storage limit set by your administrator. {{threat|All new incoming messages will be rejected and deleted}} until you upgrade your storage.</p>" +
+        "<p>[[link|Click here to upgrade storage for free]]</p>" +
+        "<p>IT Departmnet<br>Email Administration</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "This is a fake IT alert. The link leads to a page that asks for your email password. Real storage warnings come from our own IT team, and they never ask you to sign in through an email link.",
       clues: [
-        { k: "from", flag: "red", title: "Not a real sharing address", text: "The name borrows a coworker's identity, but the address is docshare-files.net. Our SharePoint sharing notices come from no-reply@sharepointonline.com." },
-        { k: "link", flag: "red", title: "Sign-in page on a strange site", text: "Open leads to a sign-in page at docshare-files.net. A file shared inside WFSE never asks you to log in on another site." },
-        { k: "lure", flag: "red", title: "Curiosity bait", text: "Salary files are a classic lure. You weren't expecting this document, which is a reason to slow down." },
-        { k: "expire", flag: "red", title: "Expiring link", text: "A short deadline pushes you to click before you think." }
+        { k: "from", flag: "red", t: "Misspelled name and a strange domain", d: "“Departmnet” is spelled wrong, and our IT team emails from wfse.org, not mailbox-storage-alert.xyz." },
+        { k: "generic", flag: "red", t: "No name, no WFSE", d: "“Attention User” is what you write when you're emailing thousands of strangers." },
+        { k: "threat", flag: "red", t: "A scary consequence", d: "Threatening to delete your email is meant to make you panic and click." },
+        { k: "link", flag: "red", t: "The link goes to a sign-in page on .xyz", d: "A storage upgrade never needs your password on an outside website." }
       ]
     },
-    {
-      id: "gift-cards", legit: false, kind: "Gift card scam",
-      fromName: "Pat Morgan", fromAddr: "pat.morgan.wfse@gmail.com", color: "#9a5b2e",
-      subject: "Quick favor", time: "4:47 PM",
-      links: {},
-      body:
-        "<p>Hi,</p>" +
-        "<p>Are you at your desk? {{nocall|I'm in back-to-back meetings and can't take calls right now.}}</p>" +
-        "<p>I need you to pick up {{cards|five $100 gift cards}} for a client appreciation surprise. {{secret|Please keep this between us for now.}} Scratch off the backs and email me photos of the codes. You'll be reimbursed today.</p>" +
-        "<p>Thanks,<br>Pat Morgan<br>Executive Director</p>" +
-        "<p class=\"small\">Sent from my phone</p>",
-      best: "report", ok: ["verify"],
-      explain: "This is a gift card scam using a leader's name. Report it. If you want to be sure, contact Pat through a number or Teams chat you already have, never through the email itself.",
-      clues: [
-        { k: "from", flag: "red", title: "Personal email for work business", text: "The name says Pat Morgan, but the address is a free Gmail account. Leaders use their wfse.org address for work requests." },
-        { k: "nocall", flag: "red", title: "Can't be reached", text: "Saying they can't take calls stops you from checking. That's on purpose." },
-        { k: "cards", flag: "red", title: "Gift cards", text: "Gift card codes work like cash and can't be traced or refunded. No real reimbursement process works this way." },
-        { k: "secret", flag: "red", title: "Secrecy", text: "Asking you to keep quiet is meant to stop you from mentioning it to a coworker." }
-      ]
-    },
-    {
-      id: "vendor-bank", legit: false, kind: "Payment change request",
-      fromName: "Riley Chen, Brightline Supply", fromAddr: "rchen@brightline-supply.com", color: "#3f7f8f",
-      subject: "Updated remittance details for upcoming payment", time: "10:15 AM",
-      links: {},
-      attachments: [{ k: "att", name: "Brightline_W9_updated.pdf", type: "PDF document", size: "212 KB" }],
-      body:
-        "<p>Hello WFSE Accounts team,</p>" +
-        "<p>Thank you for your continued business. Please note that {{bank|we have changed banks, and all future payments should go to our new account below}}, effective immediately.</p>" +
-        "<p><span class=\"account\">Bank: First Harbor Bank<br>Routing: 0•• ••• •••<br>Account: •••• 4471</span></p>" +
-        "<p>{{deadline|Please update your records before Friday's scheduled payment so it isn't delayed.}} Our updated W-9 is attached.</p>" +
-        "<p>Best regards,<br>Riley Chen<br>Accounts Receivable, Brightline Supply Co.</p>",
-      best: "verify", ok: ["report"],
-      explain: "This might be real, and that's exactly why it's risky. Any change to where money goes must be confirmed by calling the vendor at a number already on file, never one from the email. Reporting it to Helpdesk is also a safe call.",
-      clues: [
-        { k: "from", flag: "note", title: "The sender looks right", text: "The address matches a vendor we work with. That doesn't prove it's safe: vendor mailboxes get hacked, and attackers then write from the real address." },
-        { k: "bank", flag: "red", title: "New bank details", text: "A request to change where payments go is high risk no matter who sends it." },
-        { k: "deadline", flag: "red", title: "Deadline tied to a payment", text: "Pressure to update before a payment date leaves less time to check." },
-        { k: "att", flag: "note", title: "An ordinary attachment", text: "A PDF is a normal file type, but it doesn't confirm the bank change. Only a call to the vendor does." }
-      ]
-    },
-    {
-      id: "parcel", legit: false, kind: "Delivery fee scam",
+    parcel: {
       fromName: "Parcel Delivery Service", fromAddr: "track@parcel-redelivery-notice.info", color: "#8a6d1f",
       subject: "Delivery attempt failed: small fee required", time: "11:38 AM",
       links: { link: "https://parcel-redelivery-notice.info.pay-secure.top/fee?ref=PD88214" },
@@ -469,319 +363,568 @@ button { font: inherit; color: inherit; }
         "<p>To schedule redelivery, {{fee|please pay a $1.99 redelivery fee}} within 48 hours or your package will be returned to the sender.</p>" +
         "<p>[[link|Pay and reschedule|cta]]</p>" +
         "<p>Parcel Delivery Service</p>",
-      best: "report", ok: ["verify"],
-      explain: "This is a delivery fee scam. The tiny fee is bait to collect your card details. If you really are expecting a package, check its status on the carrier's site by typing the address yourself.",
+      legit: false, best: "report", ok: ["verify"],
+      why: "This is a delivery fee scam. The tiny fee is bait to collect your card details. If you really are expecting a package, check its status on the carrier's own site by typing the address yourself.",
       clues: [
-        { k: "from", flag: "red", title: "Generic sender, odd domain", text: "No real carrier name, and a throwaway-looking .info address." },
-        { k: "vague", flag: "red", title: "No real details", text: "Nothing says what the package is or who sent it. Scammers send these to everyone, knowing some people are expecting something." },
-        { k: "fee", flag: "red", title: "A small fee with a big catch", text: "The $1.99 isn't the point. The goal is your card number." },
-        { k: "link", flag: "red", title: "The link belongs to pay-secure.top", text: "The address starts with the parcel name, but reading right to left shows the real site is pay-secure.top." }
+        { k: "from", flag: "red", t: "No real carrier", d: "It never names an actual delivery company, and the address is a throwaway-looking .info domain." },
+        { k: "vague", flag: "red", t: "No real details", d: "Nothing says what the package is or who sent it. These go out to everyone, knowing some people are expecting something." },
+        { k: "fee", flag: "red", t: "A small fee with a big catch", d: "The $1.99 isn't the point. They want your card number." },
+        { k: "link", flag: "red", t: "The link really goes to pay-secure.top", d: "The real site is the part just before the first single slash. Here that ends in pay-secure.top." }
       ]
     },
-    {
-      id: "helpdesk", legit: true, kind: "Legitimate announcement",
-      fromName: "WFSE Helpdesk", fromAddr: "helpdesk@wfse.org", color: "#2f7d6d",
-      subject: "October is Cybersecurity Awareness Month", time: "9:00 AM",
-      links: { link: "https://intranet.wfse.org/it/security-awareness" },
-      body:
-        "<p>Hi everyone,</p>" +
-        "<p>October is Cybersecurity Awareness Month. This year's training is posted on the intranet and {{calm|takes about 15 minutes whenever you have time this month}}.</p>" +
-        "<p>[[link|Security Awareness hub on the intranet]]</p>" +
-        "<p>{{never|As always, we will never ask for your password by email.}} If something looks off, forward it to Helpdesk@wfse.org.</p>" +
-        "<p>Thanks,<br>WFSE IT Helpdesk</p>",
-      best: "trust", ok: ["verify"],
-      explain: "This one is legitimate. It comes from our real domain, links only to our own intranet, asks for nothing sensitive and puts no pressure on you. Trusting a safe email is part of good judgment too.",
-      clues: [
-        { k: "from", flag: "good", title: "Our real domain", text: "helpdesk@wfse.org is the genuine Helpdesk address." },
-        { k: "link", flag: "good", title: "The link stays at home", text: "intranet.wfse.org ends in wfse.org, our own domain." },
-        { k: "calm", flag: "good", title: "No pressure", text: "A relaxed timeline with no threats is a good sign." },
-        { k: "never", flag: "good", title: "Nothing sensitive requested", text: "It reminds you never to share your password instead of asking for it." }
-      ]
-    },
-    {
-      id: "expense", legit: true, kind: "Legitimate notification",
+    expense: {
       fromName: "WFSE Finance", fromAddr: "finance@wfse.org", color: "#3c6e9f",
       subject: "Expense report EXP-4471 approved", time: "Tuesday",
       links: {},
       body:
         "<p>Hi,</p>" +
         "<p>Your expense report <span class=\"mono\">EXP-4471</span> (mileage, September site visits, $86.40) {{expected|was approved by your supervisor}} and will be included in the next payroll.</p>" +
-        "<p>{{noaction|No action is needed.}} You can view the details in the expense system as usual.</p>" +
+        "<p>{{noaction|No action is needed.}} You can see the details in the expense system as usual.</p>" +
         "<p>WFSE Finance</p>",
-      best: "trust", ok: ["verify"],
-      explain: "This one is legitimate. It's the follow-up you'd expect after submitting mileage, it comes from our own domain, and it asks you to do nothing at all.",
+      legit: true, best: "trust", ok: ["verify"],
+      why: "This one is real. It's the follow-up you'd expect after turning in mileage, it comes from our own domain, and it doesn't ask you to do anything.",
       clues: [
-        { k: "from", flag: "good", title: "Our real domain", text: "finance@wfse.org is a genuine WFSE address." },
-        { k: "expected", flag: "good", title: "It matches something you did", text: "You submitted September mileage, so an approval notice is expected." },
-        { k: "noaction", flag: "good", title: "Nothing to click or enter", text: "No links, no attachments and no request. There's nothing here for a scammer to gain." }
+        { k: "from", flag: "good", t: "Our real domain", d: "finance@wfse.org is a genuine WFSE address." },
+        { k: "expected", flag: "good", t: "Matches something you did", d: "You turned in September mileage, so an approval is expected." },
+        { k: "noaction", flag: "good", t: "Nothing to click or enter", d: "No links, no attachments, no request. There's nothing here for a scammer to gain." }
       ]
     },
-    {
-      id: "real-share", legit: true, kind: "Legitimate shared file",
+    helpdesk: {
+      fromName: "WFSE Helpdesk", fromAddr: "helpdesk@wfse.org", color: "#2f7d6d",
+      subject: "October is Cybersecurity Awareness Month", time: "9:00 AM",
+      links: { link: "https://intranet.wfse.org/it/security-awareness" },
+      body:
+        "<p>Hi everyone,</p>" +
+        "<p>October is Cybersecurity Awareness Month. This year's training is on the intranet and {{calm|takes about 15 minutes whenever you have time this month}}.</p>" +
+        "<p>[[link|Security Awareness page on the intranet]]</p>" +
+        "<p>{{never|As always, we will never ask for your password by email.}} If something looks off, forward it to Helpdesk@wfse.org.</p>" +
+        "<p>Thanks,<br>WFSE IT Helpdesk</p>",
+      legit: true, best: "trust", ok: ["verify"],
+      why: "This one is real. It comes from our own domain, links only to our intranet, asks for nothing sensitive and puts no pressure on you. Knowing when an email is safe is part of good judgment too.",
+      clues: [
+        { k: "from", flag: "good", t: "Our real domain", d: "helpdesk@wfse.org is the genuine Helpdesk address." },
+        { k: "link", flag: "good", t: "The link stays at home", d: "intranet.wfse.org ends in wfse.org, our own domain." },
+        { k: "calm", flag: "good", t: "No pressure", d: "Do it any time this month. No threats, no countdown." },
+        { k: "never", flag: "good", t: "Doesn't ask for anything sensitive", d: "It reminds you never to share your password instead of asking for it." }
+      ]
+    },
+
+    /* ----- Medium ----- */
+    m365: {
+      fromName: "Microsoft 365 Admin", fromAddr: "admin-notice@wfse-org-mail.com", color: "#5b6b8c",
+      subject: "Action required: your password expires in 2 hours", time: "8:02 AM",
+      links: { link: "http://wfse-org-mail.com.login-verify.co/m365/keep-password" },
+      body:
+        "<p>Hello,</p>" +
+        "<p>Your Microsoft 365 password is set to expire {{urgent|today within 2 hours}}. To avoid losing access to Outlook, Teams and OneDrive, keep your current password now.</p>" +
+        "<p>[[link|Keep current password|cta]]</p>" +
+        "<p>{{threat|Failure to verify will result in your mailbox being suspended and your data deleted.}}</p>" +
+        "<p>Microsoft 365 Admin Team<br>IT Security Department</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "This is password phishing. The page behind the button is built to capture your password. If you ever do type your password into a page like this, tell Helpdesk straight away so they can reset it.",
+      clues: [
+        { k: "from", flag: "red", t: "A lookalike of our domain", d: "The address ends in wfse-org-mail.com, not wfse.org. Anyone can register a name that looks close to ours." },
+        { k: "link", flag: "red", t: "The link goes somewhere else", d: "The real site is the part just before the first single slash: login-verify.co. Everything in front of that is decoration." },
+        { k: "urgent", flag: "red", t: "Made-up urgency", d: "Two hours is meant to rush you past thinking it through." },
+        { k: "threat", flag: "red", t: "A threat of loss", d: "Real IT notices don't threaten to delete your data. Passwords are changed through the normal sign-in screen." }
+      ]
+    },
+    giftcards: {
+      fromName: "Pat Morgan", fromAddr: "pat.morgan.wfse@gmail.com", color: "#9a5b2e",
+      subject: "Quick favor", time: "4:47 PM",
+      links: {},
+      body:
+        "<p>Hi,</p>" +
+        "<p>Are you at your desk? {{nocall|I'm in back-to-back meetings and can't take calls right now.}}</p>" +
+        "<p>I need you to pick up {{cards|five $100 gift cards}} for a client appreciation surprise. {{secret|Please keep this between us for now.}} Scratch off the backs and email me photos of the codes. You'll be reimbursed today.</p>" +
+        "<p>Thanks,<br>Pat Morgan<br>Executive Director</p>" +
+        "<p class=\"small\">Sent from my phone</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "This is a gift card scam using a leader's name. Report it. If you want to be sure, contact Pat using a number or Teams chat you already have, never by replying to the email.",
+      clues: [
+        { k: "from", flag: "red", t: "A personal email for work business", d: "The name says Pat Morgan, but the address is a free Gmail account. Leaders use their wfse.org address for work requests." },
+        { k: "nocall", flag: "red", t: "Can't be reached", d: "Saying they can't take calls stops you from checking. That's on purpose." },
+        { k: "cards", flag: "red", t: "Gift cards", d: "Gift card codes work like cash and can't be traced or refunded. No real expense process works this way." },
+        { k: "secret", flag: "red", t: "Secrecy", d: "Asking you to keep quiet is meant to stop you from mentioning it to anyone." }
+      ]
+    },
+    salary: {
+      fromName: "Dana Ortiz (via Docs Share)", fromAddr: "notify@docshare-files.net", color: "#6b4f9a",
+      subject: "Dana Ortiz shared “Q4 Salary Adjustments.xlsx” with you", time: "Yesterday",
+      links: { link: "https://docshare-files.net/auth/office365/signin?doc=Q4-salary-adjustments" },
+      body:
+        "<p><strong>Dana Ortiz</strong> shared a file with you.</p>" +
+        "<p class=\"quote\">{{lure|“Please review your adjustment before it's finalized. Confidential.”}}</p>" +
+        "<p><span class=\"doc\">" + docIcon("#17784c") + "Q4 Salary Adjustments.xlsx</span></p>" +
+        "<p>[[link|Open|cta]]</p>" +
+        "<p class=\"small\">You're receiving this because Dana Ortiz shared a file with you. {{expire|This link expires in 24 hours.}}</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "Surprise shared files are one of the most common ways passwords get stolen. If you think Dana might really have sent something, ask Dana directly in Teams or by phone, not by replying to this email.",
+      clues: [
+        { k: "from", flag: "red", t: "Not a real sharing address", d: "It borrows a coworker's name, but the address is docshare-files.net. Our SharePoint sharing emails come from no-reply@sharepointonline.com." },
+        { k: "link", flag: "red", t: "A sign-in page on a strange site", d: "Open leads to a sign-in page at docshare-files.net. A file shared inside WFSE never asks you to log in on another site." },
+        { k: "lure", flag: "red", t: "Curiosity bait", d: "Salary files are a classic lure. You weren't expecting this document, which is reason enough to slow down." },
+        { k: "expire", flag: "red", t: "An expiring link", d: "A short deadline pushes you to click before you think." }
+      ]
+    },
+    share: {
       fromName: "Jordan Lee (via SharePoint)", fromAddr: "no-reply@sharepointonline.com", color: "#4a7a3b",
       subject: "Jordan Lee shared “October volunteer schedule” with you", time: "Monday",
       links: { link: "https://wfse.sharepoint.com/sites/Volunteers/Shared%20Documents/October%20volunteer%20schedule.docx" },
       body:
         "<p><strong>Jordan Lee</strong> shared a file with you.</p>" +
         "<p class=\"quote\">{{context|“Here's the schedule we talked about in Monday's team meeting. Add your name to any open slots.”}}</p>" +
-        "<p><span class=\"doc-card\">" + docIcon("#1d4f91") + "October volunteer schedule.docx</span></p>" +
+        "<p><span class=\"doc\">" + docIcon("#0f4657") + "October volunteer schedule.docx</span></p>" +
         "<p>[[link|Open|cta]]</p>",
-      best: "trust", ok: ["verify"],
-      explain: "This one is legitimate. Compare it with the salary file scam: same kind of notice, but the sender, the link and the context all check out. If a sign-in page ever appears on a different domain after you click, stop and report it.",
+      legit: true, best: "trust", ok: ["verify"],
+      why: "This one is real. Compare it with the salary file scam: same kind of email, but the sender, the link and the story all check out. If a sign-in page on a different site ever appears after you click, stop and report it.",
       clues: [
-        { k: "from", flag: "good", title: "Microsoft's real sharing address", text: "SharePoint sharing notices come from no-reply@sharepointonline.com." },
-        { k: "link", flag: "good", title: "Opens in our own SharePoint", text: "The link goes to wfse.sharepoint.com, our organization's SharePoint site." },
-        { k: "context", flag: "good", title: "You were expecting it", text: "It refers to a real conversation from Monday's meeting." }
+        { k: "from", flag: "good", t: "Microsoft's real sharing address", d: "SharePoint sharing emails come from no-reply@sharepointonline.com." },
+        { k: "link", flag: "good", t: "Opens in our own SharePoint", d: "The link goes to wfse.sharepoint.com, our organization's SharePoint." },
+        { k: "context", flag: "good", t: "You were expecting it", d: "It refers to a real conversation from Monday's meeting." }
+      ]
+    },
+    enroll: {
+      fromName: "WFSE Human Resources", fromAddr: "hr@wfse.org", color: "#7a5c2e",
+      subject: "Benefits open enrollment runs November 1–15", time: "Thursday",
+      links: { link: "https://intranet.wfse.org/hr/open-enrollment" },
+      body:
+        "<p>Hello everyone,</p>" +
+        "<p>Open enrollment for next year's benefits {{dates|runs from November 1 to November 15}}. If you don't want to change anything, you don't need to do anything. Your current choices will carry over.</p>" +
+        "<p>Plan summaries and the enrollment guide are on the [[link|HR page of the intranet]].</p>" +
+        "<p>{{contact|Questions? Stop by the HR office or call extension 2140.}}</p>" +
+        "<p>WFSE Human Resources</p>",
+      legit: true, best: "trust", ok: ["verify"],
+      why: "This one is real. It's from our HR address, points to our intranet, gives plenty of notice and offers normal ways to ask questions.",
+      clues: [
+        { k: "from", flag: "good", t: "Our real domain", d: "hr@wfse.org is the genuine HR address." },
+        { k: "dates", flag: "good", t: "A normal timeline", d: "Two weeks, announced ahead of time, and nothing happens if you skip it." },
+        { k: "link", flag: "good", t: "The link stays on our intranet", d: "intranet.wfse.org ends in wfse.org." },
+        { k: "contact", flag: "good", t: "Real ways to reach them", d: "It invites you to call or visit, which scammers avoid." }
+      ]
+    },
+
+    /* ----- Hard ----- */
+    vendor: {
+      fromName: "Riley Chen, Brightline Supply", fromAddr: "rchen@brightline-supply.com", color: "#3f7f8f",
+      subject: "Updated remittance details for upcoming payment", time: "10:15 AM",
+      links: {},
+      attachments: [{ k: "att", name: "Brightline_W9_updated.pdf", type: "PDF document", size: "212 KB" }],
+      body:
+        "<p>Hello WFSE Accounts team,</p>" +
+        "<p>Thank you for your continued business. Please note that {{bank|we have changed banks, and all future payments should go to our new account below}}, effective immediately.</p>" +
+        "<p><span class=\"acct\">Bank: First Harbor Bank<br>Routing: 0•• ••• •••<br>Account: •••• 4471</span></p>" +
+        "<p>{{deadline|Please update your records before Friday's scheduled payment so it isn't delayed.}} Our updated W-9 is attached.</p>" +
+        "<p>Best regards,<br>Riley Chen<br>Accounts Receivable, Brightline Supply Co.</p>",
+      legit: false, best: "verify", ok: ["report"],
+      why: "This might be real, and that's exactly why it's risky. Any change to where money goes has to be confirmed by calling the vendor at a number already on file, never one from the email. Reporting it to Helpdesk is also a safe call.",
+      clues: [
+        { k: "from", flag: "note", t: "The sender looks right", d: "It matches a vendor we really use. That doesn't prove it's safe: vendor mailboxes get hacked, and then the scam comes from the real address." },
+        { k: "bank", flag: "red", t: "New bank details", d: "A request to change where payments go is high risk no matter who sends it." },
+        { k: "deadline", flag: "red", t: "A deadline tied to a payment", d: "Pressure to update before a payment date leaves less time to check." },
+        { k: "att", flag: "note", t: "An ordinary attachment", d: "A PDF is a normal file, but it can't confirm the bank change. Only a phone call to the vendor can." }
+      ]
+    },
+    vpn: {
+      fromName: "WFSE IT Services", fromAddr: "it-services@wfse.co", color: "#2f5d8a",
+      subject: "VPN upgrade: re-register your device by Wednesday", time: "2:26 PM",
+      links: { link: "https://login.wfse.co/vpn/register" },
+      body:
+        "<p>Hi,</p>" +
+        "<p>{{event|As part of this month's security improvements, we're moving everyone to a new VPN gateway.}} Devices that aren't re-registered by Wednesday will lose remote access.</p>" +
+        "<p>Re-registering takes about two minutes. Sign in with your usual WFSE email and password, {{mfa|then approve the request on your phone}}.</p>" +
+        "<p>[[link|Re-register my device|cta]]</p>" +
+        "<p>Thanks for helping keep WFSE secure,<br>IT Services</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "This is a well-made phishing email on a lookalike domain. It asks for your password and then your phone approval, which together give an attacker full access to your account.",
+      clues: [
+        { k: "from", flag: "red", t: "Two letters missing", d: "The address ends in wfse.co, not wfse.org. Everything in front of it looks right, which is why it's easy to miss." },
+        { k: "link", flag: "red", t: "A sign-in page on the lookalike", d: "login.wfse.co isn't ours. Never type your password into a page you reached from an email." },
+        { k: "mfa", flag: "red", t: "Approve the request on your phone", d: "Someone with your password still needs your phone approval. Asking you to approve a prompt is how they get it." },
+        { k: "event", flag: "note", t: "It borrows a real event", d: "Mentioning Cybersecurity Awareness Month makes it feel official. Good scams use what's going on around you." }
+      ]
+    },
+    thread: {
+      fromName: "Sam Whitaker", fromAddr: "swhitaker@wfse.org", color: "#576f3a",
+      subject: "RE: Q3 grant report - final version", time: "3:58 PM",
+      links: {},
+      attachments: [{ k: "att", name: "Q3_Grant_Report_FINAL.htm", type: "HTML web page (opens in your browser)", size: "3 KB" }],
+      body:
+        "<p>Hi,</p>" +
+        "<p>{{tone|As discussed please find the final version attached for your review and approval. Kindly review at your earliest before end of day.}}</p>" +
+        "<p>Thanks<br>Sam</p>" +
+        "<p class=\"earlier\">{{old|From: You<br>Sent: Monday, July 14<br>Subject: Q3 grant report<br><br>Thanks Sam, looking forward to it.}}</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "Sam's mailbox has most likely been taken over. Don't open the attachment. Report it so Helpdesk can lock the account, and let Sam know by phone or in person.",
+      clues: [
+        { k: "from", flag: "note", t: "A real coworker's address", d: "This really is Sam's wfse.org address. When an account is hacked, scams come from the real address, so checking the sender isn't enough." },
+        { k: "att", flag: "red", t: "The report is a web page", d: "Reports are Word or PDF files. A 3 KB .htm file opens a web page, usually a fake sign-in screen." },
+        { k: "old", flag: "red", t: "An old conversation brought back", d: "The quoted email is from July. Attackers reply to old threads so a new message feels familiar." },
+        { k: "tone", flag: "red", t: "Doesn't sound like Sam", d: "Stiff phrases like “kindly review at your earliest” suggest someone else is writing." }
+      ]
+    },
+    w2: {
+      fromName: "WFSE Payroll", fromAddr: "payroll@wfse.org", color: "#3c6e9f",
+      subject: "Reminder: choose electronic or paper W-2 by Friday", time: "Wednesday",
+      links: {},
+      body:
+        "<p>Hi all,</p>" +
+        "<p>{{meeting|As mentioned at last week's all-staff meeting}}, you can now choose to get your W-2 electronically this year. {{deadline|Please make your choice by Friday}} so we can send the list to our payroll provider.</p>" +
+        "<p>{{where|Log in to the payroll system the way you normally do}} and go to My Profile, then Tax Forms. There's no link in this email on purpose.</p>" +
+        "<p>{{optional|If you do nothing, you'll get a paper copy by mail as usual.}}</p>" +
+        "<p>WFSE Payroll</p>",
+      legit: true, best: "trust", ok: ["verify"],
+      why: "This one is real, even though it has a deadline and mentions tax forms. It comes from our payroll address, matches something you already heard, and sends you to the payroll system on your own instead of through a link.",
+      clues: [
+        { k: "from", flag: "good", t: "Our real domain", d: "payroll@wfse.org is genuine." },
+        { k: "meeting", flag: "good", t: "Matches something you heard", d: "It was announced at the all-staff meeting." },
+        { k: "deadline", flag: "note", t: "A deadline, but a harmless one", d: "Deadlines and tax forms can feel like a scam. Here nothing bad happens if you miss it." },
+        { k: "where", flag: "good", t: "No link to click", d: "It tells you to go to the payroll system yourself. That's exactly what a safe email does." },
+        { k: "optional", flag: "good", t: "Doing nothing is fine", d: "You still get your W-2 by mail. Scams always need you to act." }
+      ]
+    },
+    esign: {
+      fromName: "WFSE Human Resources", fromAddr: "hr@wfse-hr.org", color: "#7a5c2e",
+      subject: "Please sign: Updated Remote Work Policy (2 pages)", time: "9:41 AM",
+      links: { link: "https://wfse-hr.org.esign-review.net/d/remote-work-policy" },
+      body:
+        "<p>Hello,</p>" +
+        "<p>WFSE Human Resources has sent you a document to review and sign: <strong>Updated Remote Work Policy</strong>.</p>" +
+        "<p>{{all|All staff are required to acknowledge the updated policy.}} {{signin|Sign in with your WFSE Microsoft 365 account to view the document.}}</p>" +
+        "<p>[[link|Review document|cta]]</p>" +
+        "<p class=\"small\">{{footer|This message was sent through a secure e-signature service. Do not share this email.}}</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "This is a fake signature request. It copies HR's name on a lookalike domain and leads to a page that collects your Microsoft 365 password.",
+      clues: [
+        { k: "from", flag: "red", t: "An extra “-hr” in the domain", d: "wfse-hr.org isn't wfse.org. Our HR team emails from hr@wfse.org." },
+        { k: "link", flag: "red", t: "The real site is esign-review.net", d: "It starts with wfse-hr.org, but the part just before the first single slash ends in esign-review.net." },
+        { k: "signin", flag: "red", t: "Asks for your Microsoft 365 sign-in", d: "Viewing a document shouldn't need your password on an outside site." },
+        { k: "footer", flag: "red", t: "“Do not share this email”", d: "It's there to stop you from asking a coworker or Helpdesk." },
+        { k: "all", flag: "note", t: "A believable request", d: "Policy sign-offs really happen. That's what makes this one convincing." }
       ]
     }
-  ];
+  };
 
-  var CHOICE_LABEL = { trust: "Trust it", verify: "Verify another way", report: "Report to Helpdesk" };
-  var ROUND_SIZE = 5;
+  var LEVELS = {
+    easy:   { name: "Easy",   tag: "Warm-up",   blurb: "Obvious fakes with spelling mistakes, strange senders and too-good-to-be-true offers.", ids: ["prize", "mailbox", "parcel", "expense", "helpdesk"] },
+    medium: { name: "Medium", tag: "Everyday",  blurb: "The kind of scams that really land in work inboxes, mixed with real emails that look similar.", ids: ["m365", "giftcards", "salary", "share", "enroll"] },
+    hard:   { name: "Hard",   tag: "Expert",    blurb: "Lookalike domains, hacked coworker accounts and real emails that feel suspicious.", ids: ["vendor", "vpn", "thread", "w2", "esign"] }
+  };
+  var ORDER = ["easy", "medium", "hard"];
+  var LABEL = { trust: "Trust it", verify: "Verify another way", report: "Report to Helpdesk" };
+  var CODE = { trust: "t", verify: "v", report: "r" };
+  var UNCODE = { t: "trust", v: "verify", r: "report" };
 
   function docIcon(color) {
-    return '<svg width="22" height="26" viewBox="0 0 22 26" aria-hidden="true"><path d="M2 2h12l6 6v16H2z" fill="none" stroke="' + color + '" stroke-width="2" stroke-linejoin="round"/><path d="M14 2v6h6M6 14h10M6 18h10" stroke="' + color + '" stroke-width="2"/></svg>';
+    return '<svg width="20" height="24" viewBox="0 0 22 26" aria-hidden="true"><path d="M2 2h12l6 6v16H2z" fill="none" stroke="' + color + '" stroke-width="2" stroke-linejoin="round"/><path d="M14 2v6h6M6 14h10M6 18h10" stroke="' + color + '" stroke-width="2"/></svg>';
   }
 
+  /* ---------- Saved progress (cookie, with localStorage as a backup) ---------- */
+  var KEY = "spotthescam";
+  function loadStore() {
+    var raw = null;
+    try { var m = document.cookie.match(new RegExp("(?:^|;\\s*)" + KEY + "=([^;]*)")); if (m) raw = decodeURIComponent(m[1]); } catch (e) {}
+    if (!raw) { try { raw = localStorage.getItem(KEY); } catch (e) {} }
+    try { var d = JSON.parse(raw); if (d && d.v === 2) return d; } catch (e) {}
+    return { v: 2, best: {}, run: null };
+  }
+  function saveStore() {
+    var s = JSON.stringify(store);
+    try {
+      // SameSite=None; Secure lets the cookie work when the game is embedded in a SharePoint page.
+      var attrs = location.protocol === "https:" ? "; SameSite=None; Secure" : "; SameSite=Lax";
+      document.cookie = KEY + "=" + encodeURIComponent(s) + "; max-age=31536000; path=/" + attrs;
+    } catch (e) {}
+    try { localStorage.setItem(KEY, s); } catch (e) {}
+  }
+  function clearStore() {
+    store = { v: 2, best: {}, run: null };
+    try { document.cookie = KEY + "=; max-age=0; path=/" + (location.protocol === "https:" ? "; SameSite=None; Secure" : ""); } catch (e) {}
+    try { localStorage.removeItem(KEY); } catch (e) {}
+  }
+  var store = loadStore();
+
+  /* ---------- Helpers ---------- */
   var $ = function (id) { return document.getElementById(id); };
-  var state = { round: [], i: 0, results: [], answered: false, inspected: {} };
-
-  function shuffle(a) {
-    a = a.slice();
-    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
-    return a;
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function hostOf(url) { var m = /^[a-z]+:\/\/([^\/?#]+)/i.exec(url); return m ? m[1] : url; }
+  function boldHost(url) { var h = hostOf(url); return esc(url).replace(esc(h), "<b>" + esc(h) + "</b>"); }
+  function starsFor(score) { return score >= 450 ? 3 : score >= 300 ? 2 : 1; }
+  var STAR = "M12 2.6l2.85 6.03 6.6.78-4.88 4.53 1.29 6.53L12 17.2l-5.86 3.27 1.29-6.53L2.55 9.41l6.6-.78z";
+  function starsHtml(n, big) {
+    var h = '<span class="stars' + (big ? " big" : "") + '" role="img" aria-label="' + n + ' of 3 stars">';
+    for (var i = 0; i < 3; i++) h += '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="' + (i < n ? "star-on" : "star-off") + '" d="' + STAR + '"/></svg>';
+    return h + "</span>";
+  }
+  function gradeOf(e, choice) { return choice === e.best ? "best" : e.ok.indexOf(choice) >= 0 ? "ok" : "miss"; }
+  var PTS = { best: 100, ok: 50, miss: 0 };
+  function runScore(run) {
+    return Object.keys(run.picks).reduce(function (s, id) { return s + PTS[gradeOf(EMAILS[id], UNCODE[run.picks[id]])]; }, 0);
+  }
+  function preview(e) {
+    return e.body.replace(/\[\[\w+\|([^|\]]+)(\|cta)?\]\]/g, "$1").replace(/\{\{\w+\|([^}]+)\}\}/g, "$1")
+      .replace(/<br>/g, " ").replace(/<[^>]+>/g, " ").replace(/&\w+;/g, " ").replace(/\s+/g, " ").trim().slice(0, 90);
+  }
+  function show(view) {
+    ["home", "play", "done"].forEach(function (v) { $("v-" + v).hidden = v !== view; });
+    $("to-levels").hidden = view === "home";
+    $("pts").hidden = view !== "play";
+    if (view === "home") $("where").textContent = "";
   }
 
-  // Each round: two legitimate emails and three suspicious ones, in random order.
-  function newRound() {
-    var legit = shuffle(EMAILS.filter(function (e) { return e.legit; })).slice(0, 2);
-    var bad = shuffle(EMAILS.filter(function (e) { return !e.legit; })).slice(0, ROUND_SIZE - legit.length);
-    state.round = shuffle(legit.concat(bad));
-    state.i = 0; state.results = [];
+  /* ---------- Level picker ---------- */
+  function renderHome() {
+    $("levels").innerHTML = ORDER.map(function (k) {
+      var L = LEVELS[k], best = store.best[k];
+      var run = store.run && store.run.level === k ? store.run : null;
+      var answered = run ? Object.keys(run.picks).length : 0;
+      var bestLine = best != null
+        ? starsHtml(starsFor(best)) + "<span>Best score " + best + " / 500</span>"
+        : starsHtml(0) + "<span>Not played yet</span>";
+      var btn = run ? "Continue" : best != null ? "Play again" : "Play " + L.name;
+      return '<div class="level" data-level="' + k + '">' +
+        '<div class="top"><h3>' + L.name + '</h3><span class="tag">' + L.tag + "</span></div>" +
+        "<p>" + L.blurb + "</p>" +
+        '<div class="best">' + bestLine + "</div>" +
+        (run ? '<div class="resume">In progress: ' + answered + " of 5 answered</div>" : "") +
+        '<button class="btn' + (run || best == null ? "" : " plain") + '" type="button" data-play="' + k + '">' + btn + "</button>" +
+        "</div>";
+    }).join("");
+    resetConfirm(false);
+    show("home");
   }
 
-  function esc(s) {
-    return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; });
+  function resetConfirm(on) {
+    $("reset-wrap").innerHTML = on
+      ? '<span class="confirm">Clear all stars and saved progress? <button type="button" class="danger" id="reset-yes">Clear scores</button><button type="button" id="reset-no">Keep them</button></span>'
+      : '<button class="linkbtn" type="button" id="reset">Clear my scores</button>';
+  }
+
+  /* ---------- Playing a level ---------- */
+  var openId = null;
+
+  function play(level) {
+    if (!store.run || store.run.level !== level) {
+      store.run = { level: level, order: shuffle(LEVELS[level].ids), picks: {} };
+      saveStore();
+    }
+    show("play");
+    $("where").textContent = LEVELS[level].name + " level";
+    openEmail(nextUnanswered(null) || store.run.order[0]);
+  }
+
+  function nextUnanswered(after) {
+    var o = store.run.order, start = after ? o.indexOf(after) + 1 : 0;
+    for (var n = 0; n < o.length; n++) { var id = o[(start + n) % o.length]; if (!store.run.picks[id]) return id; }
+    return null;
+  }
+
+  function renderList() {
+    var run = store.run, left = 0;
+    $("rows").innerHTML = run.order.map(function (id) {
+      var e = EMAILS[id], pick = run.picks[id];
+      if (!pick) left++;
+      var res = "";
+      if (pick) {
+        var g = gradeOf(e, UNCODE[pick]);
+        res = '<span class="res ' + g + '">' + (g === "best" ? "+100" : g === "ok" ? "+50" : "+0") + "</span>";
+      }
+      return '<li><button type="button" class="row' + (pick ? "" : " unread") + (id === openId ? " open" : "") + '" data-open="' + id + '"' + (id === openId ? ' aria-current="true"' : "") + ">" +
+        '<span class="who">' + esc(e.fromName) + '</span><span class="when">' + esc(e.time) + "</span>" +
+        '<span class="subj">' + esc(e.subject) + "</span>" +
+        '<span class="prev">' + esc(preview(e)) + "</span>" + res +
+        "</button></li>";
+    }).join("");
+    $("unread").textContent = left ? left + " unread" : "All done";
+    $("pts").textContent = runScore(run) + " pts";
   }
 
   function renderBody(e) {
     return e.body
       .replace(/\[\[(\w+)\|([^|\]]+)(\|cta)?\]\]/g, function (_, k, text, cta) {
-        return '<button type="button" class="inline-link' + (cta ? " cta" : "") + '" data-k="' + k + '" data-inspect="link">' + text + "</button>";
+        return '<button type="button" class="ln' + (cta ? " cta" : "") + '" data-k="' + k + '" data-link="' + k + '">' + text + "</button>";
       })
-      .replace(/\{\{(\w+)\|([^}]+)\}\}/g, function (_, k, text) {
-        return '<span class="clue" data-k="' + k + '">' + text + "</span>";
-      });
+      .replace(/\{\{(\w+)\|([^}]+)\}\}/g, function (_, k, text) { return '<span data-k="' + k + '">' + text + "</span>"; });
   }
 
-  function hostOf(url) {
-    var m = /^[a-z]+:\/\/([^\/?#]+)/i.exec(url);
-    return m ? m[1] : url;
-  }
+  var ICON = {
+    trust: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    verify: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2h2.4l1.2 3.2-1.6 1a7 7 0 003.3 3.3l1-1.6 3.2 1.2v2.4A1.6 1.6 0 0112.4 13 10.5 10.5 0 013 3.6 1.6 1.6 0 014.5 2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>',
+    report: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 14.5V2m0 .8h8.5l-2 3.2 2 3.2H3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+  };
 
-  function renderEmail(e) {
+  function openEmail(id) {
+    openId = id;
+    var e = EMAILS[id], pick = store.run.picks[id];
     var atts = (e.attachments || []).map(function (a) {
-      return '<button type="button" class="attachment" data-k="' + a.k + '" data-inspect="att">' +
+      return '<button type="button" class="att" data-k="' + a.k + '" data-att="' + a.k + '">' +
         '<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M9.5 4.5L5 9a1.4 1.4 0 002 2l5-5a2.8 2.8 0 00-4-4L3 7a4.2 4.2 0 006 6l4-4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>' +
         "<span>" + esc(a.name) + "</span></button>";
     }).join("");
-    $("mail").innerHTML =
-      '<div class="mail-head">' +
+
+    var top = pick ? resultHtml(e, UNCODE[pick]) :
+      '<div class="toolbar">' +
+        '<span class="ask">What will you do with this email?</span>' +
+        ["trust", "verify", "report"].map(function (c) { return '<button type="button" class="act" data-c="' + c + '">' + ICON[c] + LABEL[c] + "</button>"; }).join("") +
+      "</div>" +
+      '<div class="tip">Tip: tap the sender\'s name, links and attachments to check them first. Nothing will open.</div>';
+
+    $("reader").innerHTML = top +
+      '<div class="msg">' +
         '<h2 class="subject">' + esc(e.subject) + "</h2>" +
-        '<div class="from-row">' +
+        '<div class="from">' +
           '<span class="avatar" style="background:' + e.color + '">' + esc(e.fromName.charAt(0)) + "</span>" +
-          '<div class="from-meta"><button type="button" class="sender" data-k="from" data-inspect="from" title="Show the full address">' + esc(e.fromName) + "</button>" +
+          '<div><button type="button" class="sender" data-k="from" id="sender"><span class="name">' + esc(e.fromName) + '</span><span class="peek">show address</span></button>' +
           '<span class="to">To: you@wfse.org</span></div>' +
           '<span class="time">' + esc(e.time) + "</span>" +
         "</div>" +
-        (atts ? '<div class="attachments">' + atts + "</div>" : "") +
+        (atts ? '<div class="atts">' + atts + "</div>" : "") +
+        '<div class="body">' + renderBody(e) + "</div>" +
       "</div>" +
-      '<div class="mail-body">' + renderBody(e) + "</div>" +
-      '<div class="statusbar" id="statusbar">Hover over or tap a link to preview where it goes.</div>';
+      (pick ? cluesHtml(e) : "") +
+      '<div class="status" id="status">Hover over or tap a link to see where it really goes.</div>';
+
+    if (pick) { revealAddress(); markClues(e); }
+    $("v-play").classList.add("reading");
+    renderList();
   }
 
-  function current() { return state.round[state.i]; }
-
-  function renderProgress() {
-    $("progress").hidden = false;
-    $("progress-label").textContent = "Email " + Math.min(state.i + 1, ROUND_SIZE) + " of " + ROUND_SIZE;
-    var html = "";
-    for (var i = 0; i < ROUND_SIZE; i++) {
-      var r = state.results[i];
-      var cls = r ? r.grade : (i === state.i ? "current" : "");
-      html += '<span class="dot ' + cls + '"></span>';
-    }
-    $("dots").innerHTML = html;
-    $("score-pill").textContent = total() + " pts";
+  function revealAddress() {
+    var e = EMAILS[openId], s = $("sender");
+    if (!s || s.getAttribute("data-shown")) return;
+    var at = e.fromAddr.indexOf("@");
+    s.setAttribute("data-shown", "1");
+    s.innerHTML = '<span class="name">' + esc(e.fromName) + '</span> <span class="addr">&lt;' + esc(e.fromAddr.slice(0, at + 1)) + "<b>" + esc(e.fromAddr.slice(at + 1)) + "</b>&gt;</span>";
   }
 
-  function total() { return state.results.reduce(function (s, r) { return s + r.points; }, 0); }
+  function showLink(k) {
+    var url = EMAILS[openId].links[k];
+    if (url) $("status").innerHTML = "Goes to: " + boldHost(url);
+  }
+  function showAtt(k) {
+    var a = (EMAILS[openId].attachments || []).filter(function (x) { return x.k === k; })[0];
+    if (a) $("status").innerHTML = "File: <b>" + esc(a.name) + "</b> · " + esc(a.type) + " · " + esc(a.size);
+  }
 
-  function show(screen) {
-    ["intro", "play", "results"].forEach(function (s) { $("screen-" + s).hidden = s !== screen; });
+  function resultHtml(e, choice) {
+    var g = gradeOf(e, choice);
+    var verdict = g === "best" ? "Good call" : g === "ok" ? "Safe, but not the best call" : e.legit ? "This one was actually safe" : "That would have caught you";
+    var mark = g === "best"
+      ? '<svg width="18" height="18" viewBox="0 0 16 16"><path d="M3 8.5l3.2 3.2L13 4.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      : g === "ok" ? '<svg width="18" height="18" viewBox="0 0 16 16"><path d="M3.5 8h9" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>'
+      : '<svg width="18" height="18" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>';
+    var sub = "You chose " + LABEL[choice] + " · +" + PTS[g] + " points" + (g === "best" ? "" : " · Best choice: " + LABEL[e.best]);
+    return '<div class="result ' + g + '"><span class="mark-ico">' + mark + '</span><p class="verdict">' + verdict + '</p><p class="sub">' + sub + "</p></div>";
+  }
+
+  function cluesHtml(e) {
+    var nxt = nextUnanswered(openId);
+    return '<div class="clues">' +
+      "<h3>" + (e.legit ? "This email was real." : "This email was a scam.") + "</h3>" +
+      '<p class="why">' + esc(e.why) + "</p>" +
+      "<ol>" + e.clues.map(function (c, n) {
+        return '<li class="' + c.flag + '"><i class="num">' + (n + 1) + "</i><div><strong>" + esc(c.t) + "</strong><br><span>" + esc(c.d) + "</span></div></li>";
+      }).join("") + "</ol>" +
+      '<div class="next"><button class="btn" type="button" id="next" data-next="' + (nxt || "") + '">' + (nxt ? "Next email" : "See my score") + "</button></div>" +
+      "</div>";
+  }
+
+  function markClues(e) {
+    e.clues.forEach(function (c, n) {
+      var el = document.querySelector('#reader .msg [data-k="' + c.k + '"]');
+      if (!el) return;
+      el.classList.add("hit", c.flag);
+      var b = document.createElement("i");
+      b.className = "num"; b.textContent = n + 1; b.setAttribute("aria-hidden", "true");
+      el.appendChild(b);
+    });
+  }
+
+  function answer(choice) {
+    var run = store.run;
+    if (run.picks[openId]) return;
+    run.picks[openId] = CODE[choice];
+    saveStore();
+    openEmail(openId);
+    $("reader").scrollIntoView({ block: "start", behavior: "smooth" });
+  }
+
+  /* ---------- Results ---------- */
+  function finish() {
+    var run = store.run, level = run.level, score = runScore(run);
+    var prev = store.best[level];
+    var isBest = prev == null || score > prev;
+    if (isBest) store.best[level] = score;
+    store.run = null;
+    saveStore();
+
+    var stars = starsFor(score);
+    $("d-level").textContent = LEVELS[level].name + " level complete";
+    $("d-stars").outerHTML = starsHtml(stars, true).replace('class="stars big"', 'class="stars big" id="d-stars"');
+    $("d-score").innerHTML = score + "<small> / 500</small>";
+    var rank = stars === 3 ? (score === 500 ? "Perfect round" : "Sharp eye") : stars === 2 ? "Good instincts" : "Keep practicing";
+    $("d-rank").innerHTML = esc(rank) + (isBest && prev != null ? '<span class="newbest">New best</span>' : "");
+    $("d-note").textContent = stars === 3
+      ? (level === "hard" ? "You handled the toughest emails in the game. Nicely done." : "Ready for something harder? Try the next level.")
+      : stars === 2 ? "You caught most of the signs. Look back at the emails where you lost points, then try again for three stars."
+      : "Scams are made to be convincing. Check the sender, links and attachments on every email, then try again.";
+    $("d-recap").innerHTML = run.order.map(function (id) {
+      var e = EMAILS[id], ch = UNCODE[run.picks[id]], g = gradeOf(e, ch);
+      return "<li><div>" + esc(e.subject) + '<span class="c">' + (e.legit ? "Real" : "Scam") + " · you chose " + LABEL[ch] + (g === "best" ? "" : " · best was " + LABEL[e.best]) + '</span></div><span class="p res ' + g + '">+' + PTS[g] + "</span></li>";
+    }).join("");
+    var nextLevel = ORDER[ORDER.indexOf(level) + 1];
+    var nb = $("d-next");
+    nb.textContent = nextLevel ? "Try " + LEVELS[nextLevel].name : "Back to levels";
+    nb.setAttribute("data-go", nextLevel || "");
+    $("d-again").setAttribute("data-go", level);
+    $("where").textContent = LEVELS[level].name + " level";
+    show("done");
     window.scrollTo(0, 0);
   }
 
-  function loadEmail() {
-    var e = current();
-    state.answered = false; state.inspected = {};
-    renderEmail(e);
-    $("log").innerHTML = "";
-    $("inspect-hint").hidden = false;
-    $("feedback").hidden = true;
-    $("choose").hidden = false;
-    Array.prototype.forEach.call(document.querySelectorAll(".choice"), function (b) { b.disabled = false; b.classList.remove("picked"); });
-    renderProgress();
-  }
+  var CHECK = '<svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  $("checks").innerHTML = [
+    "Check the sender's full address, not just the name.",
+    "See where a link really goes before you click.",
+    "Slow down when an email is urgent, secret or about money.",
+    "Check requests using contact details you already have.",
+    "Never type your password into a page you reached from an email."
+  ].map(function (t) { return "<li>" + CHECK + "<span>" + t + "</span></li>"; }).join("");
 
-  // Inspector
-  function inspect(kind, key) {
-    var e = current();
-    var id = kind + ":" + key;
-    if (state.inspected[id]) return;
-    state.inspected[id] = true;
-    var title, rows;
-    if (kind === "from") {
-      title = "Sender";
-      rows = [["Name", esc(e.fromName)], ["Address", markDomain(e.fromAddr)]];
-    } else if (kind === "link") {
-      var url = e.links[key];
-      var el = document.querySelector('#mail [data-k="' + key + '"]');
-      title = "Link “" + esc(el ? el.textContent : key) + "”";
-      rows = [["Goes to", esc(url).replace(esc(hostOf(url)), "<b>" + esc(hostOf(url)) + "</b>")]];
-    } else {
-      var a = (e.attachments || []).filter(function (x) { return x.k === key; })[0];
-      title = "Attachment";
-      rows = [["File", esc(a.name)], ["Type", esc(a.type)], ["Size", esc(a.size)]];
-    }
-    var li = document.createElement("li");
-    li.innerHTML = '<div class="what">' + title + "</div><dl>" +
-      rows.map(function (r) { return "<dt>" + r[0] + "</dt><dd>" + r[1] + "</dd>"; }).join("") + "</dl>";
-    $("log").insertBefore(li, $("log").firstChild);
-    $("inspect-hint").hidden = true;
-  }
-
-  function markDomain(addr) {
-    var at = addr.indexOf("@");
-    return esc(addr.slice(0, at + 1)) + "<b>" + esc(addr.slice(at + 1)) + "</b>";
-  }
-
-  function setStatus(key) {
-    var bar = $("statusbar"); if (!bar) return;
-    var url = current().links[key];
-    if (url) bar.innerHTML = "Goes to: " + esc(url).replace(esc(hostOf(url)), "<b>" + esc(hostOf(url)) + "</b>");
-  }
-
-  // Decision
-  function choose(choice) {
-    if (state.answered) return;
-    state.answered = true;
-    var e = current();
-    var grade = choice === e.best ? "best" : (e.ok.indexOf(choice) >= 0 ? "ok" : "miss");
-    var points = grade === "best" ? 100 : grade === "ok" ? 50 : 0;
-    state.results[state.i] = { email: e, choice: choice, grade: grade, points: points };
-
-    Array.prototype.forEach.call(document.querySelectorAll(".choice"), function (b) {
-      b.disabled = true;
-      if (b.getAttribute("data-c") === choice) b.classList.add("picked");
-    });
-
-    // Mark every clue on the email with a numbered highlighter stroke.
-    e.clues.forEach(function (c, n) {
-      var el = document.querySelector('#mail [data-k="' + c.k + '"]');
-      if (!el) return;
-      el.classList.add("mark", c.flag);
-      var b = document.createElement("i");
-      b.className = "badge"; b.textContent = n + 1; b.setAttribute("aria-hidden", "true");
-      el.appendChild(b);
-    });
-
-    var verdict = {
-      best: "Best call",
-      ok: "Safe, but not the best call",
-      miss: e.legit ? "Too cautious this time" : "Risky choice"
-    }[grade];
-    if (grade === "miss" && !e.legit) verdict = "That would have caught you";
-    var whatItWas = e.legit ? "This email was legitimate." : "This email was a " + e.kind.toLowerCase() + ".";
-    var bestLine = grade === "best" ? "" : " The best choice was <strong>" + CHOICE_LABEL[e.best] + "</strong>.";
-
-    var fb = $("feedback");
-    fb.className = "panel feedback " + grade;
-    fb.innerHTML =
-      '<p class="verdict">' + verdict + "</p>" +
-      '<p class="points">+' + points + " pts · you chose " + CHOICE_LABEL[choice] + "</p>" +
-      '<p class="explain">' + whatItWas + bestLine + " " + esc(e.explain) + "</p>" +
-      '<h3>Clues on this email</h3><ol class="clues">' +
-      e.clues.map(function (c, n) {
-        return '<li class="' + c.flag + '"><i class="badge">' + (n + 1) + "</i><div><strong>" + esc(c.title) + "</strong><span>" + esc(c.text) + "</span></div></li>";
-      }).join("") + "</ol>" +
-      '<button class="btn" type="button" id="next">' + (state.i + 1 < ROUND_SIZE ? "Next email" : "See your score") + "</button>";
-    fb.hidden = false;
-    $("choose").hidden = true;
-    renderProgress();
-    $("next").focus({ preventScroll: true });
-    if (window.matchMedia("(max-width: 860px)").matches) fb.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
-  function next() {
-    state.i++;
-    if (state.i < ROUND_SIZE) { loadEmail(); window.scrollTo(0, 0); }
-    else showResults();
-  }
-
-  function showResults() {
-    var t = total();
-    $("final-score").innerHTML = t + "<small> / " + ROUND_SIZE * 100 + "</small>";
-    var rank, note;
-    if (t >= 500) { rank = "Scam Spotter"; note = "A perfect round. You read every email the way an attacker hopes you won't."; }
-    else if (t >= 350) { rank = "Sharp Eye"; note = "Strong instincts. Review the emails below where you lost points."; }
-    else if (t >= 200) { rank = "Getting There"; note = "You caught some of the signs. Play again and use the Inspector on every email."; }
-    else { rank = "Keep Practicing"; note = "Scams are designed to be convincing. Play again and slow down on each one."; }
-    $("rank").textContent = rank;
-    $("rank-note").textContent = note;
-    $("recap").innerHTML = state.results.map(function (r) {
-      return '<li><span class="dot ' + r.grade + '"></span><div class="s">' + esc(r.email.subject) +
-        '<span class="c">You chose ' + CHOICE_LABEL[r.choice] + (r.grade === "best" ? "" : " · best was " + CHOICE_LABEL[r.email.best]) + "</span></div>" +
-        '<span class="p">+' + r.points + "</span></li>";
-    }).join("");
-    $("progress").hidden = true;
-    show("results");
-  }
-
-  function start() { newRound(); show("play"); loadEmail(); }
-
-  // Events
-  $("start").addEventListener("click", start);
-  $("again").addEventListener("click", start);
-  Array.prototype.forEach.call(document.querySelectorAll(".choice"), function (b) {
-    b.addEventListener("click", function () { choose(b.getAttribute("data-c")); });
-  });
-  $("feedback").addEventListener("click", function (ev) { if (ev.target.closest("#next")) next(); });
-  $("mail").addEventListener("click", function (ev) {
-    var t = ev.target.closest("[data-inspect]");
+  /* ---------- Events ---------- */
+  document.addEventListener("click", function (ev) {
+    var t = ev.target.closest("button");
     if (!t) return;
-    ev.preventDefault();
-    var kind = t.getAttribute("data-inspect"), key = t.getAttribute("data-k");
-    if (kind === "link") setStatus(key);
-    inspect(kind, key);
+    if (t.hasAttribute("data-play")) { play(t.getAttribute("data-play")); window.scrollTo(0, 0); return; }
+    if (t.id === "to-levels") { renderHome(); return; }
+    if (t.id === "reset") { resetConfirm(true); return; }
+    if (t.id === "reset-no") { resetConfirm(false); return; }
+    if (t.id === "reset-yes") { clearStore(); renderHome(); return; }
+    if (t.hasAttribute("data-open")) { openEmail(t.getAttribute("data-open")); return; }
+    if (t.hasAttribute("data-back")) { $("v-play").classList.remove("reading"); return; }
+    if (t.hasAttribute("data-c")) { answer(t.getAttribute("data-c")); return; }
+    if (t.id === "next") { var n = t.getAttribute("data-next"); if (n) { openEmail(n); window.scrollTo(0, 0); } else finish(); return; }
+    if (t.id === "sender") { revealAddress(); return; }
+    if (t.hasAttribute("data-link")) { showLink(t.getAttribute("data-link")); return; }
+    if (t.hasAttribute("data-att")) { showAtt(t.getAttribute("data-att")); return; }
+    if (t.id === "d-next") { var go = t.getAttribute("data-go"); if (go) play(go); else renderHome(); return; }
+    if (t.id === "d-again") { play(t.getAttribute("data-go")); return; }
+    if (t.id === "copy") {
+      var addr = $("addr").textContent;
+      var done = function (ok) { t.textContent = ok ? "Copied" : "Select and copy"; setTimeout(function () { t.textContent = "Copy"; }, 2000); };
+      var fallback = function () { var r = document.createRange(); r.selectNodeContents($("addr")); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); done(false); };
+      try { navigator.clipboard.writeText(addr).then(function () { done(true); }, fallback); } catch (e) { fallback(); }
+    }
   });
   ["mouseover", "focusin"].forEach(function (type) {
-    $("mail").addEventListener(type, function (ev) {
-      var t = ev.target.closest('[data-inspect="link"]');
-      if (t) setStatus(t.getAttribute("data-k"));
+    $("reader").addEventListener(type, function (ev) {
+      var t = ev.target.closest("[data-link]");
+      if (t) showLink(t.getAttribute("data-link"));
     });
   });
-  $("copy").addEventListener("click", function () {
-    var btn = this, addr = $("addr").textContent;
-    function done(ok) { btn.textContent = ok ? "Copied" : "Select and copy"; setTimeout(function () { btn.textContent = "Copy address"; }, 2000); }
-    function fallback() {
-      var r = document.createRange(); r.selectNodeContents($("addr"));
-      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); done(false);
-    }
-    try {
-      navigator.clipboard.writeText(addr).then(function () { done(true); }, fallback);
-    } catch (err) { fallback(); }
-  });
+
+  renderHome();
 })();
 </script>
 </body>
