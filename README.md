@@ -1,6 +1,6 @@
 # Spot the Scam
 
-A five-email phishing awareness game for Cybersecurity Awareness Month. Everything is in one file, `spot-the-scam.html`: no external scripts, fonts, images or tracking. It works offline and in any modern browser.
+A phishing awareness game for Cybersecurity Awareness Month. Everything is in one file, `spot-the-scam.html`: no external scripts, fonts, images or tracking. It works offline and in any modern browser.
 
 ## How it plays
 
@@ -8,7 +8,7 @@ The page opens with a short loading animation (click to skip) and a title menu w
 
 Game touches: point pop-ups, a streak counter for correct calls in a row, a shake on risky choices, confetti for 2+ stars, and small synthesized sound effects. Sound starts at 25% volume, with a mute button and volume slider on the menu and in the top bar. The setting is remembered.
 
-Players pick a level: **Easy**, **Medium** or **Hard**. Each level is five emails in a realistic inbox, shown in a random order.
+Players pick a level: **Easy**, **Medium** or **Hard**. Each play is five emails in a realistic inbox. The **Call Ed** button shows Ed's alpaca (with a Linux penguin on its back) asking "Did you email Helpdesk?"
 
 1. **Check**: click the sender's name to show the full address, hover or click links to see where they really go, and click attachments to see the file type. Nothing opens.
 2. **Decide**: Trust it, Verify another way, or Report to Helpdesk.
@@ -19,29 +19,50 @@ Progress is saved after every answer in a cookie (with browser storage as a back
 
 Built for laptop and desktop screens for now.
 
+Each level has a pool of emails, and every play draws five at random: one or two real ones and the rest suspicious, in random order. Many of the scams have spelling or grammar mistakes, especially on Easy. A few real emails have a small typo too, to show that a typo alone doesn't make an email a scam.
+
 | Level | Email | Real or scam | Best choice |
 |---|---|---|---|
-| Easy | "You have been selected to recieve a $500 gift card" | Scam | Report |
+| Easy | "selected to recieve a $500 gift card" | Scam | Report |
 | Easy | "Your mailbox is 99% FULL" from "IT Departmnet" | Scam | Report |
-| Easy | Fake ADP "direct deposit SUSPENDED" from adp-payroll-update.net | Scam | Report |
+| Easy | Fake ADP "direct deposit SUSPENDED" | Scam | Report |
+| Easy | Fake IRS refund, "you are eligable" | Scam | Report |
+| Easy | Fake Teams "(3) unread mesages" | Scam | Report |
+| Easy | Fake StreamFlix "acount is on hold" | Scam | Report |
+| Easy | "Congradulations" bonus letter, .pdf.exe attachment | Scam | Report |
 | Easy | ADP "Your pay statement is ready" | Real | Trust |
 | Easy | Helpdesk Awareness Month announcement | Real | Trust |
-| Medium | Microsoft 365 password expiry | Scam | Report |
-| Medium | Pat Morgan, "Quick favor" (gift cards) | Scam | Report |
-| Medium | Dana Ortiz shared "Q4 Salary Adjustments.xlsx" | Scam | Report |
+| Easy | Potluck reminder from a coworker (has a small typo) | Real | Trust |
+| Easy | Facilities parking lot repaving | Real | Trust |
+| Medium | Microsoft 365 password expires in 2 hours | Scam | Report |
+| Medium | Pat Morgan "Quick favor" gift cards | Scam | Report |
+| Medium | "Q4 Salary Adjustments.xlsx" shared from docshare-files.net | Scam | Report |
+| Medium | Voicemail with an .html attachment | Scam | Report |
+| Medium | "Ticket closed" from wfse-support.org | Scam | Report |
+| Medium | ShopRight order with a callback phone number | Scam | Report |
+| Medium | Fake ADP "direct deposit change request" | Scam | Report |
+| Medium | ILOVEYOU with LOVE-LETTER-FOR-YOU.TXT.vbs | Scam | Report |
 | Medium | Jordan Lee shared "October volunteer schedule" | Real | Trust |
-| Medium | HR open enrollment announcement | Real | Trust |
+| Medium | HR open enrollment | Real | Trust |
+| Medium | Helpdesk scheduled maintenance | Real | Trust |
+| Medium | Helpdesk "password expires in 7 days" | Real | Trust |
 | Hard | Brightline Supply bank change (real vendor address) | Possibly real, high risk | Verify |
 | Hard | VPN re-registration from wfse.co | Scam | Report |
-| Hard | Sam Whitaker reply with a .htm "report" (hacked account) | Scam | Report |
-| Hard | ADP W-2 choice with a deadline | Real | Trust |
+| Hard | Sam Whitaker reply with an .htm "report" | Scam | Report |
 | Hard | "Please sign" policy from wfse-hr.org | Scam | Report |
+| Hard | Past-due invoice from brightline-suppply.com | Scam | Report |
+| Hard | MFA re-enrollment by QR code | Scam | Report |
+| Hard | W-2s for all staff, reply-to an outside address | Scam | Report |
+| Hard | Org chart "shared" to a fake SharePoint link | Scam | Report |
+| Hard | ADP W-2 choice with a deadline | Real | Trust |
+| Hard | Brightline Supply "order has shipped" | Real | Trust |
+| Hard | HR survey on Microsoft Forms | Real | Trust |
 
 All names, vendors and scam domains are fictional. The real emails assume `wfse.org`, `intranet.wfse.org` and `wfse.sharepoint.com`, and that payroll emails come from ADP at `noreply@adp.com` (MyADP at my.adp.com). Adjust these if your real addresses differ.
 
 ## Editing the emails
 
-Open the file in a text editor and find `var EMAILS = {`. Each email has a sender, subject, body, links, the best and acceptable choices, and a list of clues. In the body, `[[key|text]]` makes a link (add `|cta` for a button) and `{{key|text}}` marks a phrase that gets highlighted as a clue. Each clue's `k` matches one of those keys, `from` for the sender, or an attachment's key. Which emails belong to which level is set in `var LEVELS`.
+Open the file in a text editor and find `var EMAILS = {`. Each email has a sender, subject, body, links, the best and acceptable choices, and a list of clues. In the body, `[[key|text]]` makes a link (add `|cta` for a button) and `{{key|text}}` marks a phrase that gets highlighted as a clue. Each clue's `k` matches one of those keys, `from` for the sender, or an attachment's key. Which emails belong to which level, and how many real ones each play includes, is set in `var LEVELS`.
 
 ## Putting it on SharePoint
 

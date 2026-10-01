@@ -158,6 +158,8 @@ button { font: inherit; color: inherit; }
 .acct { display: inline-block; font-family: var(--mono); font-size: 13.5px; background: var(--pane-2); border: 1px solid var(--line); padding: 8px 12px; border-radius: 4px; }
 .doc { display: inline-flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 4px; background: var(--pane-2); font-weight: 600; max-width: 100%; }
 .doc svg { flex: none; }
+.qr { display: inline-block; padding: 6px; border: 1px solid var(--line); border-radius: 4px; background: #fff; }
+.qr svg { display: block; }
 .ln { background: none; border: 0; padding: 0; color: #0b63a8; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; text-align: left; }
 .ln.cta { background: #0b63a8; color: #fff; text-decoration: none; padding: 9px 18px; border-radius: 3px; font-weight: 600; }
 .status { font: 12.5px/1.4 var(--mono); color: var(--muted); padding: 7px 24px; border-top: 1px solid var(--line); background: var(--pane-2); min-height: 33px; overflow-wrap: anywhere; }
@@ -317,7 +319,7 @@ button { font: inherit; color: inherit; }
 .done { position: relative; }
 .score-count { font-variant-numeric: tabular-nums; }
 
-/* Call Ed llama */
+/* Call Ed alpaca (with Tux) */
 .act.ed { border-style: dashed; }
 .act.ed svg { color: #8b5e34; }
 .llama-pop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: rgba(8, 30, 40, .55); animation: viewin .2s ease both; }
@@ -326,6 +328,8 @@ button { font: inherit; color: inherit; }
 .llama-say::after { content: ""; position: absolute; bottom: -12px; left: 62%; border: 8px solid transparent; border-top: 12px solid #ffe680; border-bottom: 0; }
 .llama-art { width: 200px; height: 220px; animation: llamain .6s cubic-bezier(.3,1.5,.5,1) both; transform-origin: 50% 100%; }
 .llama-art:hover { animation: wobble .5s ease; }
+.tux { animation: tuxhop .5s ease .65s backwards; transform-box: fill-box; transform-origin: 50% 100%; }
+@keyframes tuxhop { from { transform: translateY(-30px); opacity: 0; } 60% { transform: translateY(3px); opacity: 1; } }
 @keyframes llamain { from { transform: translateY(80px) scale(.6) rotate(-8deg); opacity: 0; } }
 @keyframes wobble { 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
 .llama-sub { margin: 0 0 6px; color: var(--muted); font-size: 14px; }
@@ -384,7 +388,7 @@ button { font: inherit; color: inherit; }
     <div class="menu-inner">
       <p class="complete" id="m-complete" hidden><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 4.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Complete</p>
       <h2 class="menu-title"><span class="l1">Spot the</span><span class="l2">Scam</span></h2>
-      <p class="menu-sub">Cybersecurity Awareness Month. Fifteen emails, three levels. How many fakes can you catch?</p>
+      <p class="menu-sub">Cybersecurity Awareness Month. Three levels, a different inbox every time. How many fakes can you catch?</p>
       <div class="menu-btns">
         <button class="mbtn primary" type="button" id="m-start">Start</button>
         <button class="mbtn" type="button" id="m-continue" hidden></button>
@@ -482,30 +486,43 @@ button { font: inherit; color: inherit; }
     <p class="llama-say" id="llama-say">Did you email Helpdesk?</p>
     <svg class="llama-art" viewBox="0 0 200 220" aria-hidden="true">
       <g fill="#f3e3c3" stroke="#6b5137" stroke-width="3" stroke-linejoin="round">
-        <rect x="60" y="150" width="13" height="58" rx="6"/>
-        <rect x="80" y="152" width="13" height="56" rx="6"/>
-        <rect x="120" y="152" width="13" height="56" rx="6"/>
-        <rect x="140" y="150" width="13" height="58" rx="6"/>
-        <circle cx="48" cy="126" r="10"/>
-        <ellipse cx="104" cy="138" rx="58" ry="33"/>
-        <rect x="126" y="52" width="28" height="100" rx="14"/>
-        <path d="M137 36 L131 6 L148 30 Z"/>
-        <path d="M158 33 L162 4 L170 31 Z"/>
-        <ellipse cx="152" cy="50" rx="27" ry="21"/>
-        <ellipse cx="171" cy="59" rx="14" ry="11" fill="#e8d2a8"/>
+        <rect x="64" y="148" width="13" height="58" rx="6"/>
+        <rect x="82" y="150" width="13" height="56" rx="6"/>
+        <rect x="120" y="150" width="13" height="56" rx="6"/>
+        <rect x="138" y="148" width="13" height="58" rx="6"/>
+        <circle cx="46" cy="128" r="10"/>
+        <ellipse cx="104" cy="136" rx="57" ry="34"/>
+        <rect x="128" y="74" width="30" height="78" rx="15"/>
+        <path d="M134 50 L131 30 L142 44 Z"/>
+        <path d="M157 47 L162 28 L166 46 Z"/>
+        <ellipse cx="148" cy="64" rx="24" ry="20"/>
       </g>
       <g fill="#f8eedb" stroke="#6b5137" stroke-width="2.5">
-        <circle cx="138" cy="33" r="7"/><circle cx="148" cy="29" r="7"/><circle cx="158" cy="32" r="6"/>
+        <circle cx="60" cy="116" r="10"/><circle cx="76" cy="107" r="11"/><circle cx="112" cy="104" r="11"/><circle cx="129" cy="108" r="10"/>
+        <circle cx="160" cy="96" r="8"/><circle cx="162" cy="112" r="8"/><circle cx="160" cy="128" r="8"/>
+        <circle cx="136" cy="48" r="8"/><circle cx="147" cy="44" r="9"/><circle cx="158" cy="48" r="8"/>
       </g>
-      <circle cx="155" cy="46" r="4" fill="#3a2a1c"/><circle cx="156.5" cy="44.5" r="1.3" fill="#fff"/>
-      <ellipse cx="147" cy="57" rx="5" ry="3" fill="#f2b8a0" opacity=".8"/>
-      <path d="M177 56 q2 2 0 4" fill="none" stroke="#3a2a1c" stroke-width="2.2" stroke-linecap="round"/>
-      <path d="M166 66 q5 3 10 0" fill="none" stroke="#3a2a1c" stroke-width="2.2" stroke-linecap="round"/>
-      <path d="M123 40 a30 30 0 0 1 58 2" fill="none" stroke="#1b2733" stroke-width="4" stroke-linecap="round"/>
-      <rect x="117" y="38" width="10" height="16" rx="4" fill="#1b2733"/>
-      <path d="M122 54 q2 14 22 12" fill="none" stroke="#1b2733" stroke-width="3" stroke-linecap="round"/>
-      <circle cx="146" cy="66" r="3.5" fill="#1b2733"/>
-      <path d="M74 112 q30 -14 60 0" fill="none" stroke="#6b5137" stroke-width="2" opacity=".35"/>
+      <ellipse cx="162" cy="73" rx="12" ry="9" fill="#e8d2a8" stroke="#6b5137" stroke-width="3"/>
+      <circle cx="152" cy="59" r="4" fill="#3a2a1c"/><circle cx="153.5" cy="57.5" r="1.3" fill="#fff"/>
+      <ellipse cx="142" cy="70" rx="5" ry="3" fill="#f2b8a0" opacity=".8"/>
+      <path d="M168 69 q2 2 0 4" fill="none" stroke="#3a2a1c" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M157 80 q5 3 10 0" fill="none" stroke="#3a2a1c" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M124 58 a26 26 0 0 1 50 -2" fill="none" stroke="#1b2733" stroke-width="4" stroke-linecap="round"/>
+      <rect x="118" y="54" width="10" height="16" rx="4" fill="#1b2733"/>
+      <path d="M123 70 q2 14 22 12" fill="none" stroke="#1b2733" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="146" cy="82" r="3.5" fill="#1b2733"/>
+      <g class="tux">
+        <ellipse cx="86" cy="104" rx="7" ry="3.5" fill="#f4a700"/>
+        <ellipse cx="101" cy="104" rx="7" ry="3.5" fill="#f4a700"/>
+        <ellipse cx="81" cy="88" rx="3.5" ry="9" fill="#111" transform="rotate(18 81 88)"/>
+        <ellipse cx="106" cy="88" rx="3.5" ry="9" fill="#111" transform="rotate(-18 106 88)"/>
+        <ellipse cx="93.5" cy="89" rx="12" ry="15" fill="#111"/>
+        <ellipse cx="93.5" cy="93" rx="8" ry="10.5" fill="#fff"/>
+        <circle cx="93.5" cy="72" r="9.5" fill="#111"/>
+        <ellipse cx="90.3" cy="70.5" rx="2.8" ry="3.4" fill="#fff"/><ellipse cx="96.7" cy="70.5" rx="2.8" ry="3.4" fill="#fff"/>
+        <circle cx="90.8" cy="71.2" r="1.3" fill="#111"/><circle cx="96.2" cy="71.2" r="1.3" fill="#111"/>
+        <path d="M89 75.5 q4.5 -2.5 9 0 q-4.5 4 -9 0 z" fill="#f4a700"/>
+      </g>
     </svg>
     <p class="llama-sub">Ed says: forward it to <strong>Helpdesk@wfse.org</strong> first.</p>
     <button class="btn" type="button" id="llama-close">Okay, Ed</button>
@@ -618,6 +635,121 @@ button { font: inherit; color: inherit; }
       ]
     },
 
+    tax: {
+      fromName: "IRS Refund Departmnet", fromAddr: "refunds@irs-gov-refund.info", color: "#4b5d73",
+      subject: "Notice: You are eligable for a tax refund of $1,284.50", time: "5:03 AM",
+      links: { link: "http://irs-gov-refund.info/claim/refund-form.php" },
+      body:
+        "<p>{{generic|Dear Tax Payer,}}</p>" +
+        "<p>After the last annual calculations of your fiscal activity {{typos|we have determined that you are eligable to recieve a tax refund}} of <strong>$1,284.50</strong>.</p>" +
+        "<p>{{info|Kindly submit you're refund request with your Social Security Number and bank account details}} so we can proceed the payment.</p>" +
+        "<p>[[link|Submit Refund Form|cta]]</p>" +
+        "<p>{{rush|Refund request must be submit within 3 days or it will be cancel.}}</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "This is a fake tax refund scam. The IRS doesn't email you about refunds and never asks for your Social Security number or bank details by email.",
+      clues: [
+        { k: "from", flag: "red", t: "Not the real IRS", d: "The IRS uses irs.gov. This is irs-gov-refund.info, and “Departmnet” is misspelled." },
+        { k: "typos", flag: "red", t: "Spelling mistakes", d: "“eligable” and “recieve”. A government agency proofreads its letters." },
+        { k: "info", flag: "red", t: "Asks for your SSN and bank details", d: "Plus “you're” instead of “your”. No real refund is claimed this way." },
+        { k: "rush", flag: "red", t: "Broken grammar and a deadline", d: "“must be submit” and “will be cancel”. Bad grammar plus pressure is a classic combination." },
+        { k: "link", flag: "red", t: "The link isn't irs.gov", d: "It goes to irs-gov-refund.info." }
+      ]
+    },
+    teams: {
+      fromName: "Microsoft Teams Notificaton", fromAddr: "no-reply@teams-message-alerts.co", color: "#5b5fc7",
+      subject: "You have (3) unread mesages in Teams", time: "1:17 PM",
+      links: { link: "http://teams-message-alerts.co/signin/view-messages" },
+      body:
+        "<p>{{typos|Hi user, you have 3 new mesages waiting from you're team.}}</p>" +
+        "<p>{{signin|To read them you must login with your email and password below.}}</p>" +
+        "<p>[[link|View Mesages|cta]]</p>" +
+        "<p class=\"small\">{{footer|Microsoft Teams Notificaton Service. Dont reply this email.}}</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "This is a fake Teams alert. Teams messages show up in Teams itself, and opening them never needs your password on a website from an email.",
+      clues: [
+        { k: "from", flag: "red", t: "Misspelled and not Microsoft", d: "“Notificaton” is misspelled, and the address is teams-message-alerts.co." },
+        { k: "typos", flag: "red", t: "Several spelling mistakes", d: "“mesages”, “from you're team”. Microsoft's automatic emails don't read like this." },
+        { k: "signin", flag: "red", t: "Asks for your password", d: "You're already signed in to Teams. Just open the app." },
+        { k: "footer", flag: "red", t: "Broken English in the footer", d: "“Dont reply this email” is a common giveaway." },
+        { k: "link", flag: "red", t: "The link goes to a strange site", d: "teams-message-alerts.co has nothing to do with Microsoft." }
+      ]
+    },
+    potluck: {
+      fromName: "Alex Rivera", fromAddr: "arivera@wfse.org", color: "#a0522d",
+      subject: "Potluck lunch Friday!", time: "10:42 AM",
+      links: {},
+      body:
+        "<p>Hi team,</p>" +
+        "<p>{{plan|Just a reminder that we're doing the October potluck this Friday at noon in the break room.}} {{typo|Dont forget to add your dish to the sign-up sheet on the fridge}} so we don't end up with six bags of chips again.</p>" +
+        "<p>{{noask|No need to reply.}} See you there!</p>" +
+        "<p>Alex</p>",
+      legit: true, best: "trust", ok: ["verify"],
+      why: "This one is real. It's from a coworker's wfse.org address, it's about something everyone already knows about, and it asks for nothing. A small typo on its own doesn't make an email a scam.",
+      clues: [
+        { k: "from", flag: "good", t: "A real coworker's address", d: "arivera@wfse.org is on our own domain." },
+        { k: "plan", flag: "good", t: "Something you already know about", d: "The potluck was planned, and the details are normal office stuff." },
+        { k: "typo", flag: "note", t: "A typo, but that's fine", d: "“Dont” is missing an apostrophe. People make typos too. What matters is that nothing here asks you to click, pay or sign in." },
+        { k: "noask", flag: "good", t: "Asks for nothing", d: "No links, no attachments, no request." }
+      ]
+    },
+
+    stream: {
+      fromName: "StreamFlix Billing", fromAddr: "billing@streamflix-acount-hold.com", color: "#b81d24",
+      subject: "Your acount is on hold - update payment", time: "9:26 PM",
+      links: { link: "http://streamflix-acount-hold.com/update-card" },
+      body:
+        "<p>{{generic|Hi Dear Customer,}}</p>" +
+        "<p>{{typos|We was unable to proccess your last payment}} and your StreamFlix acount have been placed on hold.</p>" +
+        "<p>{{card|To keep watching please update you're card details within 24 hours.}}</p>" +
+        "<p>[[link|UPDATE PAYMENT|cta]]</p>" +
+        "<p>The StreamFlix Team</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "This is a fake billing email. It also landed in your work inbox, but you'd never use your work email for a personal streaming account. If you're worried about a real account, open the app or type the site's address yourself.",
+      clues: [
+        { k: "from", flag: "red", t: "Misspelled domain", d: "streamflix-acount-hold.com. “Acount” is misspelled even in the address." },
+        { k: "generic", flag: "red", t: "“Hi Dear Customer”", d: "Odd greeting, and no name." },
+        { k: "typos", flag: "red", t: "Broken grammar and spelling", d: "“We was unable to proccess” and “acount have been”." },
+        { k: "card", flag: "red", t: "Asks for card details with a deadline", d: "Also “you're” instead of “your”." },
+        { k: "link", flag: "red", t: "Link to the same misspelled site", d: "Nothing to do with a real streaming service." }
+      ]
+    },
+    bonus: {
+      fromName: "WFSE HR Departmen", fromAddr: "hr-department@wfse-bonus.com", color: "#7a5c2e",
+      subject: "Congradulations!! Your Year-End Bonus Letter", time: "4:02 PM",
+      links: {},
+      attachments: [{ k: "att", name: "Bonus_Letter_2026.pdf.exe", type: "Application (runs a program)", size: "1.2 MB" }],
+      body:
+        "<p>{{typos|Congradulations!!}}</p>" +
+        "<p>{{lure|You have been approve for a year-end bonus.}} Please open the attached letter to see you're bonus amount and {{sign|sign to accept before Friday}}.</p>" +
+        "<p>HR Departmen</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "This is malware dressed up as good news. The “letter” is a program that would install itself on your computer if you opened it.",
+      clues: [
+        { k: "from", flag: "red", t: "Not our HR, and misspelled", d: "wfse-bonus.com isn't wfse.org, and “Departmen” is missing a t." },
+        { k: "att", flag: "red", t: "A .pdf.exe file", d: "The real ending is .exe, which is a program. The “.pdf” in the middle is a disguise." },
+        { k: "typos", flag: "red", t: "“Congradulations”", d: "Spelling mistakes in the very first word." },
+        { k: "lure", flag: "red", t: "Bait you'd want to open", d: "Free money gets people to click. Also “have been approve” is broken grammar." },
+        { k: "sign", flag: "red", t: "A deadline", d: "Pushes you to open it now instead of asking someone." }
+      ]
+    },
+    parking: {
+      fromName: "WFSE Facilities", fromAddr: "facilities@wfse.org", color: "#5f6b3a",
+      subject: "Parking lot repaving next Monday", time: "Thursday",
+      links: {},
+      body:
+        "<p>Hi all,</p>" +
+        "<p>{{plan|The main parking lot will be repaved next Monday from 7 AM to 5 PM.}} Please use the overflow lot on Elm Street that day.</p>" +
+        "<p>{{noask|There's nothing you need to reply to or sign up for.}} Questions can go to Facilities at extension 2300.</p>" +
+        "<p>Thanks,<br>WFSE Facilities</p>",
+      legit: true, best: "trust", ok: ["verify"],
+      why: "This one is real. It's from our Facilities address, it's a plain notice, and it doesn't ask you to click, pay or sign in.",
+      clues: [
+        { k: "from", flag: "good", t: "Our real domain", d: "facilities@wfse.org." },
+        { k: "plan", flag: "good", t: "Specific, ordinary details", d: "A date, times and an alternative lot." },
+        { k: "noask", flag: "good", t: "Nothing requested", d: "No links, no attachments." }
+      ]
+    },
+
     /* ----- Medium ----- */
     m365: {
       fromName: "Microsoft 365 Admin", fromAddr: "admin-notice@wfse-org-mail.com", color: "#5b6b8c",
@@ -710,6 +842,134 @@ button { font: inherit; color: inherit; }
         { k: "dates", flag: "good", t: "A normal timeline", d: "Two weeks, announced ahead of time, and nothing happens if you skip it." },
         { k: "link", flag: "good", t: "The link stays on our intranet", d: "intranet.wfse.org ends in wfse.org." },
         { k: "contact", flag: "good", t: "Real ways to reach them", d: "It invites you to call or visit, which scammers avoid." }
+      ]
+    },
+
+    voicemail: {
+      fromName: "WFSE Voicemail", fromAddr: "voicemail@wfse-voicemail.net", color: "#566573",
+      subject: "New voicemail (0:42) from +1 (555) 013-2291", time: "3:12 PM",
+      links: {},
+      attachments: [{ k: "att", name: "VM_0042_play.html", type: "HTML web page (opens in your browser)", size: "6 KB" }],
+      body:
+        "<p>You have received a new voice message.</p>" +
+        "<p><span class=\"acct\">From: +1 (555) 013-2291<br>Length: 0:42<br>Received: Today, 3:11 PM</span></p>" +
+        "<p>{{grammar|Please listen to you voice message by open the attachment below.}} {{signin|You may be ask to sign in with your Microsoft account to verify.}}</p>" +
+        "<p class=\"small\">WFSE Unified Communications</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "This is a fake voicemail email. The attachment is a web page that shows a fake Microsoft sign-in to steal your password. Real voicemails show up in your phone system, not as an HTML file.",
+      clues: [
+        { k: "from", flag: "red", t: "Not our domain", d: "wfse-voicemail.net isn't wfse.org. Anyone can register a name like that." },
+        { k: "att", flag: "red", t: "A voicemail that's a web page", d: "Audio is an .mp3 or .wav file. An .html file opens a web page, usually a fake sign-in screen." },
+        { k: "grammar", flag: "red", t: "Clumsy grammar", d: "“listen to you voice message by open the attachment”. Automatic system emails are written once and checked." },
+        { k: "signin", flag: "red", t: "Sign in to hear a voicemail?", d: "Playing a voicemail never needs your Microsoft password. Plus “be ask” is another grammar slip." }
+      ]
+    },
+    ticket: {
+      fromName: "WFSE Helpdesk", fromAddr: "helpdesk@wfse-support.org", color: "#2f7d6d",
+      subject: "Ticket #48211 has been closed - please confirm", time: "11:05 AM",
+      links: { link: "https://wfse-support.org/portal/login?ticket=48211" },
+      body:
+        "<p>Hello,</p>" +
+        "<p>{{grammar|Your ticket #48211 have been resolve by our technician.}} {{unexpected|If the issue still persist or you did not request this ticket}}, please login to the portal within 24 hour to re-open it, otherwise it will be close automatically.</p>" +
+        "<p>[[link|Login to Helpdesk Portal|cta]]</p>" +
+        "<p>Thank you,<br>WFSE Helpdesk</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "This copies our Helpdesk's name on a lookalike domain. The “if you didn't request this” line is there to make people who never opened a ticket click to find out what happened.",
+      clues: [
+        { k: "from", flag: "red", t: "Lookalike domain", d: "Our Helpdesk emails from helpdesk@wfse.org. This is wfse-support.org." },
+        { k: "grammar", flag: "red", t: "Grammar mistakes", d: "“have been resolve”, “within 24 hour”, “will be close”. Our Helpdesk doesn't write like this." },
+        { k: "unexpected", flag: "red", t: "A ticket you never opened", d: "Made to make you curious or worried enough to click. If you're unsure, contact Helpdesk directly." },
+        { k: "link", flag: "red", t: "Login page on the lookalike", d: "wfse-support.org isn't ours, so never sign in there." }
+      ]
+    },
+    maintenance: {
+      fromName: "WFSE Helpdesk", fromAddr: "helpdesk@wfse.org", color: "#2f7d6d",
+      subject: "Scheduled maintenance this Saturday, 6–10 PM", time: "Monday",
+      links: {},
+      body:
+        "<p>Hi everyone,</p>" +
+        "<p>{{when|This Saturday from 6 to 10 PM}}, email and the shared drives may be unavailable while we install updates.</p>" +
+        "<p>{{noaction|You don't need to do anything.}} If something isn't working on Monday morning, contact Helpdesk@wfse.org or call extension 2100.</p>" +
+        "<p>Thanks for your patience,<br>WFSE IT Helpdesk</p>",
+      legit: true, best: "trust", ok: ["verify"],
+      why: "This one is real. It's a plain heads-up from our real Helpdesk address with no links, no attachments and nothing for you to do.",
+      clues: [
+        { k: "from", flag: "good", t: "Our real Helpdesk address", d: "helpdesk@wfse.org. Compare it with the fake “ticket closed” email from wfse-support.org." },
+        { k: "when", flag: "good", t: "Specific and ordinary", d: "A normal maintenance window, announced ahead of time." },
+        { k: "noaction", flag: "good", t: "Nothing to do", d: "No link, no sign-in, no deadline you need to meet." }
+      ]
+    },
+
+    callback: {
+      fromName: "ShopRight Orders", fromAddr: "orders@shopright-support-desk.com", color: "#c46a00",
+      subject: "Order #SR-77420 confirmed: Laptop Pro 15 ($1,499.99)", time: "6:34 AM",
+      links: {},
+      body:
+        "<p>Thank you for your order!</p>" +
+        "<p><span class=\"acct\">Item: Laptop Pro 15<br>Total: $1,499.99<br>Ships to: 4410 W Harbor Rd</span></p>" +
+        "<p>{{unexpected|If you did not place this order}}, {{call|please call our cancellation line immediately at +1 (555) 014-7782}} {{grammar|to prevent the charge from being complete.}}</p>" +
+        "<p>ShopRight Customer Care</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "This is a callback scam. There's no link to catch. They want you to call, and the person who answers will try to get your card details or remote access to your computer.",
+      clues: [
+        { k: "from", flag: "red", t: "A support-desk domain", d: "shopright-support-desk.com isn't a store's real address." },
+        { k: "unexpected", flag: "red", t: "An order you never placed", d: "The shock of a big charge is what makes people call." },
+        { k: "call", flag: "red", t: "The phone number is the trap", d: "Never call a number from a suspicious email. Check orders on the store's real site or app." },
+        { k: "grammar", flag: "red", t: "“from being complete”", d: "Should be “completed”. A small slip, but real order emails are templated and checked." }
+      ]
+    },
+    adpchange: {
+      fromName: "ADP Workforce Now", fromAddr: "notifications@adp-workforce.net", color: "#b3261e",
+      subject: "Direct deposit change request received", time: "12:19 PM",
+      links: { link: "https://adp-workforce.net/myadp/cancel-request" },
+      body:
+        "<p>Hello,</p>" +
+        "<p>{{change|We received a request to change the bank account for your direct deposit.}} The change will take effect on your next pay date.</p>" +
+        "<p>{{cancel|If you did not make this request, cancel it now by signing in to MyADP below}}. {{grammar|Request not cancel within 12 hours will be processed.}}</p>" +
+        "<p>[[link|Cancel this request|cta]]</p>" +
+        "<p>ADP</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "This copies ADP to scare you into signing in on a fake MyADP page. If you're worried about your direct deposit, go to MyADP yourself or ask WFSE payroll.",
+      clues: [
+        { k: "from", flag: "red", t: "Not ADP's domain", d: "Our ADP emails come from adp.com. This is adp-workforce.net." },
+        { k: "change", flag: "red", t: "A scary change to your pay", d: "Made to make you act fast without thinking." },
+        { k: "cancel", flag: "red", t: "“Sign in to cancel”", d: "The cancel button is the trap. It leads to a fake sign-in page." },
+        { k: "grammar", flag: "red", t: "Broken grammar", d: "“Request not cancel within 12 hours will be processed”." },
+        { k: "link", flag: "red", t: "Fake MyADP link", d: "The real site is my.adp.com, not adp-workforce.net." }
+      ]
+    },
+    pwexpire: {
+      fromName: "WFSE Helpdesk", fromAddr: "helpdesk@wfse.org", color: "#2f7d6d",
+      subject: "Your WFSE password expires in 7 days", time: "8:00 AM",
+      links: {},
+      body:
+        "<p>Hi,</p>" +
+        "<p>{{time|Your WFSE password will expire in 7 days.}}</p>" +
+        "<p>{{how|To change it, press Ctrl+Alt+Delete on your work computer and choose “Change a password”.}} {{nolink|There's no link in this email, and we will never ask you to type your password into a website from an email.}}</p>" +
+        "<p>WFSE IT Helpdesk</p>",
+      legit: true, best: "trust", ok: ["verify"],
+      why: "This one is real. Compare it with the fake Microsoft 365 alert: plenty of notice, our real address, and it tells you to change your password on your own computer instead of clicking anything.",
+      clues: [
+        { k: "from", flag: "good", t: "Our real Helpdesk", d: "helpdesk@wfse.org." },
+        { k: "time", flag: "good", t: "Plenty of notice", d: "Seven days, not two hours." },
+        { k: "how", flag: "good", t: "The normal way to change it", d: "Ctrl+Alt+Delete on your own computer. No website involved." },
+        { k: "nolink", flag: "good", t: "No link at all", d: "Nothing to click means nothing to fake." }
+      ]
+    },
+
+    iloveyou: {
+      fromName: "Chris Delgado", fromAddr: "cdelgado@wfse.org", color: "#c2185b",
+      subject: "ILOVEYOU", time: "9:14 AM",
+      links: {},
+      attachments: [{ k: "att", name: "LOVE-LETTER-FOR-YOU.TXT.vbs", type: "VBScript file (runs a program)", size: "10 KB" }],
+      body:
+        "<p>{{odd|kindly check the attached LOVELETTER coming from me.}}</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "This is a remake of the famous ILOVEYOU virus from 2000. It came from a real coworker's address because the virus emails itself to everyone in an infected person's contacts. The attachment is a script that runs the moment it's opened.",
+      clues: [
+        { k: "from", flag: "note", t: "A real coworker, really infected", d: "The address is genuine. Viruses spread by sending themselves from infected accounts, so a familiar sender isn't enough." },
+        { k: "att", flag: "red", t: "A .TXT.vbs file", d: "The real ending is .vbs, a script that runs a program. “.TXT” is a disguise to make it look like a harmless text file." },
+        { k: "odd", flag: "red", t: "Out of character", d: "One odd lowercase line with no greeting, and a love letter from a coworker? Ask Chris in person before opening anything." }
       ]
     },
 
@@ -811,19 +1071,151 @@ button { font: inherit; color: inherit; }
         { k: "footer", flag: "red", t: "“Do not share this email”", d: "It's there to stop you from asking a coworker or Helpdesk." },
         { k: "all", flag: "note", t: "A believable request", d: "Policy sign-offs really happen. That's what makes this one convincing." }
       ]
+    }    ,
+    invoice: {
+      fromName: "Brightline Supply Billing", fromAddr: "billing@brightline-suppply.com", color: "#3f7f8f",
+      subject: "Invoice INV-20931 past due - final reminder", time: "8:47 AM",
+      links: { link: "https://brightline-suppply.com/billing/pay?inv=INV-20931" },
+      attachments: [{ k: "att", name: "INV-20931.pdf", type: "PDF document", size: "88 KB" }],
+      body:
+        "<p>Dear WFSE Accounts Payable,</p>" +
+        "<p>Our records show invoice <span class=\"mono\">INV-20931</span> for $4,860.00 is now 30 days past due. {{grammar|Kindly remit the payment at the earliest to avoid any service disruption.}}</p>" +
+        "<p>For your convenience you can pay online using the link below.</p>" +
+        "<p>[[link|Pay invoice online|cta]]</p>" +
+        "<p>Regards,<br>Billing Department<br>Brightline Supply Co.</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "This copies a real vendor on a lookalike domain with three p's. Check any past-due notice against the vendor's account and pay only through your normal process.",
+      clues: [
+        { k: "from", flag: "red", t: "One extra letter", d: "brightline-suppply.com has three p's. The real vendor is brightline-supply.com." },
+        { k: "link", flag: "red", t: "The payment link is on the lookalike", d: "We never pay vendor invoices through a link in an email." },
+        { k: "grammar", flag: "red", t: "“Remit the payment at the earliest”", d: "Slightly off phrasing that's common in invoice fraud, alongside a threat of disruption." },
+        { k: "att", flag: "note", t: "A normal-looking PDF", d: "The file type looks fine. The sender and the link are what give it away." }
+      ]
+    },
+    qrcode: {
+      fromName: "WFSE IT Security", fromAddr: "security@wfse-org.us", color: "#2f5d8a",
+      subject: "Required: re-enroll multi-factor authentication", time: "7:58 AM",
+      links: {},
+      body:
+        "<p>Hello,</p>" +
+        "<p>As part of our annual security review, {{all|all staff must re-enroll their multi-factor authentication}} by end of day Thursday.</p>" +
+        "<p>{{scan|Scan the QR code below with your phone camera}} and sign in with your WFSE email and password to complete enrollment.</p>" +
+        "<p><span data-k=\"qr\" class=\"qr\">" + qrSvg() + "</span></p>" +
+        "<p>Thank you for keeping WFSE secure.<br>IT Security Team</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "This is QR code phishing. A QR code hides its destination, so you can't check it like a link, and scanning on your phone moves you off your protected work laptop. Report it.",
+      clues: [
+        { k: "from", flag: "red", t: "A .us lookalike", d: "wfse-org.us isn't wfse.org." },
+        { k: "qr", flag: "red", t: "A QR code instead of a link", d: "You can't hover over a QR code to see where it goes. That's exactly why scammers use them." },
+        { k: "scan", flag: "red", t: "Moves you to your phone", d: "Your phone may not have the same protections as your work laptop, and it's harder to spot a fake site on a small screen." },
+        { k: "all", flag: "note", t: "Sounds official", d: "Security reviews are real. Our IT team would announce MFA changes through Helpdesk, not a QR code." }
+      ]
+    },
+    shipped: {
+      fromName: "Brightline Supply Orders", fromAddr: "orders@brightline-supply.com", color: "#3f7f8f",
+      subject: "Your order #BL-55120 has shipped", time: "Yesterday",
+      links: { link: "https://brightline-supply.com/account/orders/BL-55120" },
+      body:
+        "<p>Hi WFSE team,</p>" +
+        "<p>{{expected|Your order #BL-55120 (12 cases of copy paper, 4 toner cartridges)}} shipped today and should arrive Thursday.</p>" +
+        "<p>You can see the order status in your account: [[link|View order BL-55120]]</p>" +
+        "<p>{{nopay|No payment is due. This order was billed to your account on net-30 terms as usual.}}</p>" +
+        "<p>Thanks,<br>Brightline Supply Co.</p>",
+      legit: true, best: "trust", ok: ["verify"],
+      why: "This one is real. It's from the vendor's real domain, describes an order we actually placed, and asks for no payment or sign-in through the email.",
+      clues: [
+        { k: "from", flag: "good", t: "The vendor's real domain", d: "brightline-supply.com with two p's. Compare it with the three-p invoice scam." },
+        { k: "expected", flag: "good", t: "Matches a real order", d: "Specific items we really ordered." },
+        { k: "link", flag: "good", t: "Link stays on the real site", d: "It goes to brightline-supply.com, the same domain as the sender." },
+        { k: "nopay", flag: "good", t: "No money requested", d: "Billing works the usual way, with no new payment details." }
+      ]
+    }    ,
+    w2request: {
+      fromName: "Pat Morgan", fromAddr: "pmorgan@wfse.org", replyTo: "pat.morgan.office@outlook.com", color: "#9a5b2e",
+      subject: "W-2s for audit", time: "5:12 PM",
+      links: {},
+      body:
+        "<p>Hi,</p>" +
+        "<p>{{ask|Can you send me a PDF of the W-2s for all staff for the year?}} The auditors need them for a review we're doing.</p>" +
+        "<p>{{rush|I need them today, please send asap}}. {{reply|Just reply to this email with them attached.}}</p>" +
+        "<p>Thanks,<br>Pat</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "This is a W-2 data theft scam. The “From” looks right, but replies go to an outside Gmail-style account. Everyone's W-2s would give a criminal enough to file fake tax returns in all of our names.",
+      clues: [
+        { k: "from", flag: "red", t: "Replies go somewhere else", d: "It shows pmorgan@wfse.org, but the reply-to is pat.morgan.office@outlook.com. Click the sender name to see it." },
+        { k: "ask", flag: "red", t: "Everyone's tax forms", d: "Bulk W-2 requests are one of the most common scams aimed at organizations. A real audit goes through payroll, not email." },
+        { k: "rush", flag: "red", t: "Today, asap", d: "Rushed requests leave no time to check." },
+        { k: "reply", flag: "red", t: "“Just reply”", d: "Because replying sends the files straight to the outside address." }
+      ]
+    },
+    orgchart: {
+      fromName: "Jordan Lee (via SharePoint)", fromAddr: "no-reply@sharepointonline.com", color: "#4a7a3b",
+      subject: "Jordan Lee shared “Updated Org Chart - October” with you", time: "10:03 AM",
+      links: { link: "https://wfse.sharepoint.com.doc-view-secure.net/Org-Chart-October" },
+      body:
+        "<p><strong>Jordan Lee</strong> shared a file with you.</p>" +
+        "<p class=\"quote\">{{lure|“Heads up, a few teams are moving. Check where you landed.”}}</p>" +
+        "<p><span class=\"doc\">" + docIcon("#b6473a") + "Updated Org Chart - October.pdf</span></p>" +
+        "<p>[[link|Open|cta]]</p>",
+      legit: false, best: "report", ok: ["verify"],
+      why: "The sender line and layout match a real SharePoint share, but the link doesn't. If Jordan really shared something, it will be in SharePoint or OneDrive under “Shared with me”.",
+      clues: [
+        { k: "from", flag: "note", t: "The sender looks real", d: "Display names and even addresses can be faked or copied. Always check the link too." },
+        { k: "link", flag: "red", t: "The real site is doc-view-secure.net", d: "It starts with wfse.sharepoint.com, but the part just before the first single slash ends in doc-view-secure.net." },
+        { k: "lure", flag: "red", t: "Made to make you curious", d: "“Check where you landed” is hard to ignore. That's the point." }
+      ]
+    },
+    survey: {
+      fromName: "WFSE Human Resources", fromAddr: "hr@wfse.org", color: "#7a5c2e",
+      subject: "5-minute survey: the new benefits portal", time: "Friday",
+      links: { link: "https://forms.office.com/r/wfseBenefits26" },
+      body:
+        "<p>Hi everyone,</p>" +
+        "<p>{{meeting|As we mentioned in Tuesday's staff meeting}}, we'd like your feedback on the new benefits portal.</p>" +
+        "<p>The [[link|survey is on Microsoft Forms]] and takes about five minutes. {{anon|It doesn't ask for any personal or login details, and it's anonymous.}}</p>" +
+        "<p>{{optional|It's optional, and it closes on the 20th.}}</p>" +
+        "<p>Thanks,<br>WFSE HR</p>",
+      legit: true, best: "trust", ok: ["verify"],
+      why: "This one is real, even though the link leaves our domain. Microsoft Forms is a normal tool we use, the email came from our real HR address, and the survey asks for nothing sensitive.",
+      clues: [
+        { k: "from", flag: "good", t: "Our real HR address", d: "hr@wfse.org." },
+        { k: "link", flag: "note", t: "An outside link that's still safe", d: "forms.office.com is Microsoft's real Forms site. Not every outside link is a scam. Check where it really goes." },
+        { k: "meeting", flag: "good", t: "Already announced", d: "Matches something you heard at the staff meeting." },
+        { k: "anon", flag: "good", t: "Asks for nothing sensitive", d: "No password, no personal details." },
+        { k: "optional", flag: "good", t: "No pressure", d: "Optional, with a relaxed deadline." }
+      ]
     }
   };
 
+  // Each play draws five emails from the level's pool: a random number of real ones (legit range), the rest scams.
   var LEVELS = {
-    easy:   { name: "Easy",   tag: "Warm-up",   blurb: "Obvious fakes with spelling mistakes, strange senders and too-good-to-be-true offers.", ids: ["prize", "mailbox", "adpfake", "expense", "helpdesk"] },
-    medium: { name: "Medium", tag: "Everyday",  blurb: "The kind of scams that really land in work inboxes, mixed with real emails that look similar.", ids: ["m365", "giftcards", "salary", "share", "enroll"] },
-    hard:   { name: "Hard",   tag: "Expert",    blurb: "Lookalike domains, hacked coworker accounts and real emails that feel suspicious.", ids: ["vendor", "vpn", "thread", "w2", "esign"] }
+    easy:   { name: "Easy",   tag: "Warm-up",  legit: [1, 2], blurb: "Obvious fakes with spelling mistakes, strange senders and too-good-to-be-true offers.", ids: ["prize", "mailbox", "adpfake", "tax", "teams", "stream", "bonus", "expense", "helpdesk", "potluck", "parking"] },
+    medium: { name: "Medium", tag: "Everyday", legit: [1, 2], blurb: "The kind of scams that really land in work inboxes, mixed with real emails that look similar.", ids: ["m365", "giftcards", "salary", "voicemail", "ticket", "callback", "adpchange", "iloveyou", "share", "enroll", "maintenance", "pwexpire"] },
+    hard:   { name: "Hard",   tag: "Expert",   legit: [1, 2], blurb: "Lookalike domains, hacked coworker accounts, QR codes and real emails that feel suspicious.", ids: ["vendor", "vpn", "thread", "esign", "invoice", "qrcode", "w2request", "orgchart", "w2", "shipped", "survey"] }
   };
+  function drawRound(level) {
+    var L = LEVELS[level];
+    var real = shuffle(L.ids.filter(function (id) { return EMAILS[id].legit; }));
+    var fake = shuffle(L.ids.filter(function (id) { return !EMAILS[id].legit; }));
+    var nReal = L.legit[0] + Math.floor(Math.random() * (L.legit[1] - L.legit[0] + 1));
+    return shuffle(real.slice(0, nReal).concat(fake.slice(0, 5 - nReal)));
+  }
   var ORDER = ["easy", "medium", "hard"];
   var LABEL = { trust: "Trust it", verify: "Verify another way", report: "Report to Helpdesk" };
   var CODE = { trust: "t", verify: "v", report: "r" };
   var UNCODE = { t: "trust", v: "verify", r: "report" };
 
+  // Decorative QR code: three finder squares plus a fixed pseudo-random pattern.
+  function qrSvg() {
+    var n = 25, cells = "", seed = 7;
+    function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+    function finder(x, y) { return '<rect x="' + x + '" y="' + y + '" width="7" height="7" fill="#111"/><rect x="' + (x + 1) + '" y="' + (y + 1) + '" width="5" height="5" fill="#fff"/><rect x="' + (x + 2) + '" y="' + (y + 2) + '" width="3" height="3" fill="#111"/>'; }
+    for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) {
+      var inFinder = (x < 8 && y < 8) || (x > n - 9 && y < 8) || (x < 8 && y > n - 9);
+      if (!inFinder && rnd() > .52) cells += '<rect x="' + x + '" y="' + y + '" width="1" height="1"/>';
+    }
+    return '<svg width="140" height="140" viewBox="-2 -2 29 29" role="img" aria-label="QR code" shape-rendering="crispEdges"><rect x="-2" y="-2" width="29" height="29" fill="#fff"/><g fill="#111">' + cells + "</g>" + finder(0, 0) + finder(n - 7, 0) + finder(0, n - 7) + "</svg>";
+  }
   function docIcon(color) {
     return '<svg width="20" height="24" viewBox="0 0 22 26" aria-hidden="true"><path d="M2 2h12l6 6v16H2z" fill="none" stroke="' + color + '" stroke-width="2" stroke-linejoin="round"/><path d="M14 2v6h6M6 14h10M6 18h10" stroke="' + color + '" stroke-width="2"/></svg>';
   }
@@ -1088,7 +1480,7 @@ button { font: inherit; color: inherit; }
 
   function play(level) {
     if (!store.run || store.run.level !== level) {
-      store.run = { level: level, order: shuffle(LEVELS[level].ids), picks: {} };
+      store.run = { level: level, order: drawRound(level), picks: {} };
       saveStore();
     }
     show("play");
@@ -1181,7 +1573,8 @@ button { font: inherit; color: inherit; }
     if (!s || s.getAttribute("data-shown")) return;
     var at = e.fromAddr.indexOf("@");
     s.setAttribute("data-shown", "1");
-    s.innerHTML = '<span class="name">' + esc(e.fromName) + '</span> <span class="addr">&lt;' + esc(e.fromAddr.slice(0, at + 1)) + "<b>" + esc(e.fromAddr.slice(at + 1)) + "</b>&gt;</span>";
+    s.innerHTML = '<span class="name">' + esc(e.fromName) + '</span> <span class="addr">&lt;' + esc(e.fromAddr.slice(0, at + 1)) + "<b>" + esc(e.fromAddr.slice(at + 1)) + "</b>&gt;</span>"
+    if (e.replyTo) s.innerHTML += '<br><span class="addr">Reply-to: <b>' + esc(e.replyTo) + "</b></span>";
   }
 
   function showLink(k) {
