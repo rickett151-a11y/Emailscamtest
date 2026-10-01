@@ -4,6 +4,10 @@ A five-email phishing awareness game for Cybersecurity Awareness Month. Everythi
 
 ## How it plays
 
+The page opens with a short loading animation (click to skip) and a title menu with Start, Continue (when a level is in progress) and How to play. Each level starts with an intro animation.
+
+Game touches: point pop-ups, a streak counter for correct calls in a row, a shake on risky choices, confetti for 2+ stars, and small synthesized sound effects. Sound starts at 25% volume, with a mute button and volume slider on the menu and in the top bar. The setting is remembered.
+
 Players pick a level: **Easy**, **Medium** or **Hard**. Each level is five emails in a realistic inbox, shown in a random order.
 
 1. **Check**: click the sender's name to show the full address, hover or click links to see where they really go, and click attachments to see the file type. Nothing opens.
