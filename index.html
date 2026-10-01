@@ -513,40 +513,42 @@ button { font: inherit; color: inherit; }
         { k: "link", flag: "red", t: "The link goes to a sign-in page on .xyz", d: "A storage upgrade never needs your password on an outside website." }
       ]
     },
-    parcel: {
-      fromName: "Parcel Delivery Service", fromAddr: "track@parcel-redelivery-notice.info", color: "#8a6d1f",
-      subject: "Delivery attempt failed: small fee required", time: "11:38 AM",
-      links: { link: "https://parcel-redelivery-notice.info.pay-secure.top/fee?ref=PD88214" },
+    adpfake: {
+      fromName: "ADP Payroll Servise", fromAddr: "payroll-alert@adp-payroll-update.net", color: "#b3261e",
+      subject: "URGENT: Your direct deposit has been SUSPENDED", time: "6:51 AM",
+      links: { link: "http://adp-payroll-update.net/verify/bank-login" },
       body:
-        "<p>Dear customer,</p>" +
-        "<p>We attempted to deliver your package <span class=\"mono\">#PD-88214-US</span> today, but {{vague|no one was available to sign for it}}.</p>" +
-        "<p>To schedule redelivery, {{fee|please pay a $1.99 redelivery fee}} within 48 hours or your package will be returned to the sender.</p>" +
-        "<p>[[link|Pay and reschedule|cta]]</p>" +
-        "<p>Parcel Delivery Service</p>",
+        "<p>{{generic|Dear Employee,}}</p>" +
+        "<p>{{threat|Your direct deposit has been suspended due to a security issue. Your next paycheck will not be paid}} until you verify your bank account.</p>" +
+        "<p>[[link|VERIFY BANK ACCOUNT NOW|cta]]</p>" +
+        "<p>{{bank|You will need your online banking username and password to complete verification.}}</p>" +
+        "<p>Thank You,<br>ADP Payroll Servise Team</p>",
       legit: false, best: "report", ok: ["verify"],
-      why: "This is a delivery fee scam. The tiny fee is bait to collect your card details. If you really are expecting a package, check its status on the carrier's own site by typing the address yourself.",
+      why: "This is a fake ADP email. Direct deposit changes are made by you inside MyADP, and nobody ever needs your online banking password. Report it.",
       clues: [
-        { k: "from", flag: "red", t: "No real carrier", d: "It never names an actual delivery company, and the address is a throwaway-looking .info domain." },
-        { k: "vague", flag: "red", t: "No real details", d: "Nothing says what the package is or who sent it. These go out to everyone, knowing some people are expecting something." },
-        { k: "fee", flag: "red", t: "A small fee with a big catch", d: "The $1.99 isn't the point. They want your card number." },
-        { k: "link", flag: "red", t: "The link really goes to pay-secure.top", d: "The real site is the part just before the first single slash. Here that ends in pay-secure.top." }
+        { k: "from", flag: "red", t: "Not ADP's real address", d: "Our ADP emails come from adp.com. This one is adp-payroll-update.net, and “Servise” is misspelled." },
+        { k: "generic", flag: "red", t: "“Dear Employee”", d: "Real payroll emails know who you are." },
+        { k: "threat", flag: "red", t: "Your paycheck is threatened", d: "Scaring you about your pay is meant to make you click without thinking." },
+        { k: "bank", flag: "red", t: "Asks for your bank login", d: "Neither ADP nor WFSE ever needs your online banking password." },
+        { k: "link", flag: "red", t: "The link isn't ADP", d: "It goes to adp-payroll-update.net. The real MyADP site is my.adp.com." }
       ]
     },
     expense: {
-      fromName: "WFSE Finance", fromAddr: "finance@wfse.org", color: "#3c6e9f",
-      subject: "Expense report EXP-4471 approved", time: "Tuesday",
+      fromName: "ADP", fromAddr: "noreply@adp.com", color: "#3c6e9f",
+      subject: "Your pay statement is ready", time: "Tuesday",
       links: {},
       body:
-        "<p>Hi,</p>" +
-        "<p>Your expense report <span class=\"mono\">EXP-4471</span> (mileage, September site visits, $86.40) {{expected|was approved by your supervisor}} and will be included in the next payroll.</p>" +
-        "<p>{{noaction|No action is needed.}} You can see the details in the expense system as usual.</p>" +
-        "<p>WFSE Finance</p>",
+        "<p>Hello,</p>" +
+        "<p>{{expected|Your pay statement for the September 30 pay date is now available}} in MyADP.</p>" +
+        "<p>{{nodetails|For your security, this email doesn't include any pay details.}} {{where|To view your statement, sign in to MyADP the way you normally do.}}</p>" +
+        "<p>ADP</p>",
       legit: true, best: "trust", ok: ["verify"],
-      why: "This one is real. It's the follow-up you'd expect after turning in mileage, it comes from our own domain, and it doesn't ask you to do anything.",
+      why: "This one is real. It's the usual payday notice from ADP's own address, it shares no details, and it sends you to MyADP on your own instead of through a link.",
       clues: [
-        { k: "from", flag: "good", t: "Our real domain", d: "finance@wfse.org is a genuine WFSE address." },
-        { k: "expected", flag: "good", t: "Matches something you did", d: "You turned in September mileage, so an approval is expected." },
-        { k: "noaction", flag: "good", t: "Nothing to click or enter", d: "No links, no attachments, no request. There's nothing here for a scammer to gain." }
+        { k: "from", flag: "good", t: "ADP's real address", d: "Our payroll notices come from adp.com." },
+        { k: "expected", flag: "good", t: "Matches payday", d: "A pay statement notice right after payday is expected." },
+        { k: "nodetails", flag: "good", t: "No sensitive details", d: "It doesn't show your pay or bank info in the email." },
+        { k: "where", flag: "good", t: "No link to click", d: "It tells you to sign in to MyADP yourself. That's exactly what a safe email does." }
       ]
     },
     helpdesk: {
@@ -724,22 +726,22 @@ button { font: inherit; color: inherit; }
       ]
     },
     w2: {
-      fromName: "WFSE Payroll", fromAddr: "payroll@wfse.org", color: "#3c6e9f",
-      subject: "Reminder: choose electronic or paper W-2 by Friday", time: "Wednesday",
+      fromName: "ADP", fromAddr: "noreply@adp.com", color: "#3c6e9f",
+      subject: "Action needed by Friday: choose electronic or paper W-2", time: "Wednesday",
       links: {},
       body:
-        "<p>Hi all,</p>" +
-        "<p>{{meeting|As mentioned at last week's all-staff meeting}}, you can now choose to get your W-2 electronically this year. {{deadline|Please make your choice by Friday}} so we can send the list to our payroll provider.</p>" +
-        "<p>{{where|Log in to the payroll system the way you normally do}} and go to My Profile, then Tax Forms. There's no link in this email on purpose.</p>" +
+        "<p>Hi,</p>" +
+        "<p>{{meeting|As mentioned at last week's WFSE all-staff meeting}}, you can now get your W-2 electronically through ADP this year. {{deadline|Please make your choice by Friday}} so WFSE payroll can finalize the list.</p>" +
+        "<p>{{where|Sign in to MyADP the way you normally do}} and go to Myself, then Pay, then Tax Statements. There's no link in this email on purpose.</p>" +
         "<p>{{optional|If you do nothing, you'll get a paper copy by mail as usual.}}</p>" +
-        "<p>WFSE Payroll</p>",
+        "<p>ADP, on behalf of WFSE Payroll</p>",
       legit: true, best: "trust", ok: ["verify"],
-      why: "This one is real, even though it has a deadline and mentions tax forms. It comes from our payroll address, matches something you already heard, and sends you to the payroll system on your own instead of through a link.",
+      why: "This one is real, even though it has a deadline and mentions tax forms. It comes from ADP's real address, matches something you already heard, and sends you to MyADP on your own instead of through a link.",
       clues: [
-        { k: "from", flag: "good", t: "Our real domain", d: "payroll@wfse.org is genuine." },
+        { k: "from", flag: "good", t: "ADP's real address", d: "Our payroll emails come from adp.com." },
         { k: "meeting", flag: "good", t: "Matches something you heard", d: "It was announced at the all-staff meeting." },
         { k: "deadline", flag: "note", t: "A deadline, but a harmless one", d: "Deadlines and tax forms can feel like a scam. Here nothing bad happens if you miss it." },
-        { k: "where", flag: "good", t: "No link to click", d: "It tells you to go to the payroll system yourself. That's exactly what a safe email does." },
+        { k: "where", flag: "good", t: "No link to click", d: "It tells you to sign in to MyADP yourself. That's exactly what a safe email does." },
         { k: "optional", flag: "good", t: "Doing nothing is fine", d: "You still get your W-2 by mail. Scams always need you to act." }
       ]
     },
@@ -766,7 +768,7 @@ button { font: inherit; color: inherit; }
   };
 
   var LEVELS = {
-    easy:   { name: "Easy",   tag: "Warm-up",   blurb: "Obvious fakes with spelling mistakes, strange senders and too-good-to-be-true offers.", ids: ["prize", "mailbox", "parcel", "expense", "helpdesk"] },
+    easy:   { name: "Easy",   tag: "Warm-up",   blurb: "Obvious fakes with spelling mistakes, strange senders and too-good-to-be-true offers.", ids: ["prize", "mailbox", "adpfake", "expense", "helpdesk"] },
     medium: { name: "Medium", tag: "Everyday",  blurb: "The kind of scams that really land in work inboxes, mixed with real emails that look similar.", ids: ["m365", "giftcards", "salary", "share", "enroll"] },
     hard:   { name: "Hard",   tag: "Expert",    blurb: "Lookalike domains, hacked coworker accounts and real emails that feel suspicious.", ids: ["vendor", "vpn", "thread", "w2", "esign"] }
   };
@@ -785,7 +787,7 @@ button { font: inherit; color: inherit; }
     var raw = null;
     try { var m = document.cookie.match(new RegExp("(?:^|;\\s*)" + KEY + "=([^;]*)")); if (m) raw = decodeURIComponent(m[1]); } catch (e) {}
     if (!raw) { try { raw = localStorage.getItem(KEY); } catch (e) {} }
-    try { var d = JSON.parse(raw); if (d && d.v === 2) return d; } catch (e) {}
+    try { var d = JSON.parse(raw); if (d && d.v === 2) { if (d.run && !d.run.order.every(function (id) { return EMAILS[id]; })) d.run = null; return d; } } catch (e) {}
     return { v: 2, best: {}, run: null };
   }
   function saveStore() {

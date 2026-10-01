@@ -23,8 +23,8 @@ Built for laptop and desktop screens for now.
 |---|---|---|---|
 | Easy | "You have been selected to recieve a $500 gift card" | Scam | Report |
 | Easy | "Your mailbox is 99% FULL" from "IT Departmnet" | Scam | Report |
-| Easy | Parcel redelivery fee | Scam | Report |
-| Easy | Expense report approved | Real | Trust |
+| Easy | Fake ADP "direct deposit SUSPENDED" from adp-payroll-update.net | Scam | Report |
+| Easy | ADP "Your pay statement is ready" | Real | Trust |
 | Easy | Helpdesk Awareness Month announcement | Real | Trust |
 | Medium | Microsoft 365 password expiry | Scam | Report |
 | Medium | Pat Morgan, "Quick favor" (gift cards) | Scam | Report |
@@ -34,10 +34,10 @@ Built for laptop and desktop screens for now.
 | Hard | Brightline Supply bank change (real vendor address) | Possibly real, high risk | Verify |
 | Hard | VPN re-registration from wfse.co | Scam | Report |
 | Hard | Sam Whitaker reply with a .htm "report" (hacked account) | Scam | Report |
-| Hard | Payroll W-2 choice with a deadline | Real | Trust |
+| Hard | ADP W-2 choice with a deadline | Real | Trust |
 | Hard | "Please sign" policy from wfse-hr.org | Scam | Report |
 
-All names, vendors and scam domains are fictional. The real emails assume `wfse.org`, `intranet.wfse.org` and `wfse.sharepoint.com`. Adjust these if your real addresses differ.
+All names, vendors and scam domains are fictional. The real emails assume `wfse.org`, `intranet.wfse.org` and `wfse.sharepoint.com`, and that payroll emails come from ADP at `noreply@adp.com` (MyADP at my.adp.com). Adjust these if your real addresses differ.
 
 ## Editing the emails
 
