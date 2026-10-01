@@ -901,21 +901,21 @@ button { font: inherit; color: inherit; }
     },
 
     callback: {
-      fromName: "ShopRight Orders", fromAddr: "orders@shopright-support-desk.com", color: "#c46a00",
-      subject: "Order #SR-77420 confirmed: Laptop Pro 15 ($1,499.99)", time: "6:34 AM",
+      fromName: "Dell Order Support", fromAddr: "orders@dell-support-desk.com", color: "#0076ce",
+      subject: "Dell order #DL-77420 confirmed: Latitude 7450 laptop ($1,899.99)", time: "6:34 AM",
       links: {},
       body:
-        "<p>Thank you for your order!</p>" +
-        "<p><span class=\"acct\">Item: Laptop Pro 15<br>Total: $1,499.99<br>Ships to: 4410 W Harbor Rd</span></p>" +
-        "<p>{{unexpected|If you did not place this order}}, {{call|please call our cancellation line immediately at +1 (555) 014-7782}} {{grammar|to prevent the charge from being complete.}}</p>" +
-        "<p>ShopRight Customer Care</p>",
+        "<p>Thank you for your Dell order!</p>" +
+        "<p><span class=\"acct\">Item: Dell Latitude 7450 Laptop<br>Total: $1,899.99<br>Ships to: 4410 W Harbor Rd</span></p>" +
+        "<p>{{unexpected|If you did not place this order}}, {{call|please call Dell cancellation department immediately at +1 (555) 014-7782}} {{grammar|to prevent the charge from being complete.}}</p>" +
+        "<p>Dell Customer Care</p>",
       legit: false, best: "report", ok: ["verify"],
-      why: "This is a callback scam. There's no link to catch. They want you to call, and the person who answers will try to get your card details or remote access to your computer.",
+      why: "This is a callback scam using Dell's name. There's no link to catch. They want you to call, and the person who answers will try to get your card details or remote access to your computer. WFSE laptops are ordered by IT, so a laptop order in your inbox should go to Helpdesk.",
       clues: [
-        { k: "from", flag: "red", t: "A support-desk domain", d: "shopright-support-desk.com isn't a store's real address." },
-        { k: "unexpected", flag: "red", t: "An order you never placed", d: "The shock of a big charge is what makes people call." },
-        { k: "call", flag: "red", t: "The phone number is the trap", d: "Never call a number from a suspicious email. Check orders on the store's real site or app." },
-        { k: "grammar", flag: "red", t: "“from being complete”", d: "Should be “completed”. A small slip, but real order emails are templated and checked." }
+        { k: "from", flag: "red", t: "Not Dell's real domain", d: "Real Dell emails come from dell.com. This is dell-support-desk.com." },
+        { k: "unexpected", flag: "red", t: "An order you never placed", d: "The shock of a big charge is what makes people call. IT orders WFSE laptops, not you." },
+        { k: "call", flag: "red", t: "The phone number is the trap", d: "Never call a number from a suspicious email. If you're worried, ask Helpdesk." },
+        { k: "grammar", flag: "red", t: "Grammar slips", d: "\u201ccall Dell cancellation department\u201d and \u201cfrom being complete\u201d. Real order emails are templated and checked." }
       ]
     },
     adpchange: {
@@ -1190,7 +1190,7 @@ button { font: inherit; color: inherit; }
   // Each play draws five emails from the level's pool: a random number of real ones (legit range), the rest scams.
   var LEVELS = {
     easy:   { name: "Easy",   tag: "Warm-up",  legit: [1, 2], blurb: "Obvious fakes with spelling mistakes, strange senders and too-good-to-be-true offers.", ids: ["prize", "mailbox", "adpfake", "tax", "teams", "stream", "bonus", "expense", "helpdesk", "potluck", "parking"] },
-    medium: { name: "Medium", tag: "Everyday", legit: [1, 2], blurb: "The kind of scams that really land in work inboxes, mixed with real emails that look similar.", ids: ["m365", "giftcards", "salary", "voicemail", "ticket", "callback", "adpchange", "iloveyou", "share", "enroll", "maintenance", "pwexpire"] },
+    medium: { name: "Medium", tag: "Everyday", legit: [1, 2], always: ["iloveyou"], blurb: "The kind of scams that really land in work inboxes, mixed with real emails that look similar.", ids: ["m365", "giftcards", "salary", "voicemail", "ticket", "callback", "adpchange", "iloveyou", "share", "enroll", "maintenance", "pwexpire"] },
     hard:   { name: "Hard",   tag: "Expert",   legit: [1, 2], blurb: "Lookalike domains, hacked coworker accounts, QR codes and real emails that feel suspicious.", ids: ["vendor", "vpn", "thread", "esign", "invoice", "qrcode", "w2request", "orgchart", "w2", "shipped", "survey"] }
   };
   function drawRound(level) {
@@ -1198,7 +1198,10 @@ button { font: inherit; color: inherit; }
     var real = shuffle(L.ids.filter(function (id) { return EMAILS[id].legit; }));
     var fake = shuffle(L.ids.filter(function (id) { return !EMAILS[id].legit; }));
     var nReal = L.legit[0] + Math.floor(Math.random() * (L.legit[1] - L.legit[0] + 1));
-    return shuffle(real.slice(0, nReal).concat(fake.slice(0, 5 - nReal)));
+    // Emails listed in "always" are in every round of that level (ILOVEYOU on Medium).
+    var always = L.always || [];
+    fake = fake.filter(function (id) { return always.indexOf(id) < 0; });
+    return shuffle(always.concat(real.slice(0, nReal), fake.slice(0, 5 - nReal - always.length)));
   }
   var ORDER = ["easy", "medium", "hard"];
   var LABEL = { trust: "Trust it", verify: "Verify another way", report: "Report to Helpdesk" };

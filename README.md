@@ -39,9 +39,9 @@ Each level has a pool of emails, and every play draws five at random: one or two
 | Medium | "Q4 Salary Adjustments.xlsx" shared from docshare-files.net | Scam | Report |
 | Medium | Voicemail with an .html attachment | Scam | Report |
 | Medium | "Ticket closed" from wfse-support.org | Scam | Report |
-| Medium | ShopRight order with a callback phone number | Scam | Report |
+| Medium | Fake Dell laptop order with a callback phone number | Scam | Report |
 | Medium | Fake ADP "direct deposit change request" | Scam | Report |
-| Medium | ILOVEYOU with LOVE-LETTER-FOR-YOU.TXT.vbs | Scam | Report |
+| Medium | ILOVEYOU with LOVE-LETTER-FOR-YOU.TXT.vbs (in every Medium round) | Scam | Report |
 | Medium | Jordan Lee shared "October volunteer schedule" | Real | Trust |
 | Medium | HR open enrollment | Real | Trust |
 | Medium | Helpdesk scheduled maintenance | Real | Trust |
