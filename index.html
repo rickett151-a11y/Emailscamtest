@@ -1546,7 +1546,6 @@ button { font: inherit; color: inherit; }
       '<div class="toolbar">' +
         '<span class="ask">What will you do with this email?</span>' +
         ["trust", "verify", "report"].map(function (c) { return '<button type="button" class="act" data-c="' + c + '">' + ICON[c] + LABEL[c] + "</button>"; }).join("") +
-        '<button type="button" class="act ed" id="call-ed">' + ICON.verify + "Call Ed</button>" +
       "</div>" +
       '<div class="tip">Tip: tap the sender\'s name, links and attachments to check them first. Nothing will open.</div>';
 
