@@ -327,20 +327,7 @@ button { font: inherit; color: inherit; }
 .done { position: relative; }
 .score-count { font-variant-numeric: tabular-nums; }
 
-/* Call Ed alpaca (with Tux) */
-.act.ed { border-style: dashed; }
-.act.ed svg { color: #8b5e34; }
-.llama-pop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: rgba(8, 30, 40, .55); animation: viewin .2s ease both; }
-.llama-card { background: var(--pane); border-radius: 8px; padding: 22px 28px 24px; display: grid; justify-items: center; gap: 10px; box-shadow: 0 20px 60px rgba(0,0,0,.3); max-width: 360px; text-align: center; }
-.llama-say { position: relative; margin: 0 0 4px; background: #ffe680; color: #0d2a33; font: 800 22px/1.2 var(--font-head); padding: 12px 18px; border-radius: 14px; animation: pop .4s ease .25s backwards; }
-.llama-say::after { content: ""; position: absolute; bottom: -12px; left: 62%; border: 8px solid transparent; border-top: 12px solid #ffe680; border-bottom: 0; }
-.llama-art { width: 200px; height: 220px; animation: llamain .6s cubic-bezier(.3,1.5,.5,1) both; transform-origin: 50% 100%; }
-.llama-art:hover { animation: wobble .5s ease; }
-.tux { animation: tuxhop .5s ease .65s backwards; transform-box: fill-box; transform-origin: 50% 100%; }
-@keyframes tuxhop { from { transform: translateY(-30px); opacity: 0; } 60% { transform: translateY(3px); opacity: 1; } }
-@keyframes llamain { from { transform: translateY(80px) scale(.6) rotate(-8deg); opacity: 0; } }
-@keyframes wobble { 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
-.llama-sub { margin: 0 0 6px; color: var(--muted); font-size: 14px; }
+
 @media (max-width: 900px) {
   .levels { grid-template-columns: minmax(0, 1fr); }
   .howto { grid-template-columns: repeat(2, minmax(0, 1fr)); }
