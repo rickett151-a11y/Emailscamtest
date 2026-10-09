@@ -8,7 +8,7 @@ The page opens with a short loading animation (click to skip) and a title menu w
 
 Game touches: point pop-ups, a streak counter for correct calls in a row, a shake on risky choices, confetti for 2+ stars, and small synthesized sound effects. Sound starts at 25% volume, with a mute button and volume slider on the menu and in the top bar. The setting is remembered.
 
-Players pick a level: **Easy**, **Medium** or **Hard**. Each play is five emails in a realistic inbox. The **Call Ed** button shows Ed's alpaca (with a Linux penguin on its back) asking "Did you email Helpdesk?"
+Players pick a level: **Easy**, **Medium** or **Hard**. Each play is five emails in a realistic inbox.
 
 1. **Check**: click the sender's name to show the full address, hover or click links to see where they really go, and click attachments to see the file type. Nothing opens.
 2. **Decide**: Trust it, Verify another way, or Report to Helpdesk.

@@ -327,7 +327,6 @@ button { font: inherit; color: inherit; }
 .done { position: relative; }
 .score-count { font-variant-numeric: tabular-nums; }
 
-
 @media (max-width: 900px) {
   .levels { grid-template-columns: minmax(0, 1fr); }
   .howto { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1251,8 +1250,7 @@ button { font: inherit; color: inherit; }
       miss:   [[196, 0, .16, "sawtooth", .07], [147, .14, .3, "sawtooth", .07]],
       drop:   [[880, 0, .05, "sine", .08], [1175, .04, .06, "sine", .06]],
       star:   [[1047, 0, .08, "triangle"], [1568, .07, .25, "triangle"]],
-      peek:   [[988, 0, .04, "sine", .05]],
-      ring:   [[1319, 0, .06, "sine", .07], [1047, .07, .06, "sine", .07], [1319, .14, .06, "sine", .07], [1047, .21, .06, "sine", .07], [784, .45, .18, "triangle"]]
+      peek:   [[988, 0, .04, "sine", .05]]
     };
     var t0 = actx.currentTime + .01;
     (SONGS[name] || []).forEach(function (n) {
@@ -1640,7 +1638,7 @@ button { font: inherit; color: inherit; }
     if (!$("v-boot").hidden) { toMenu(); return; }
     if (!$("v-intro").hidden) { endIntro(); return; }
     if (!t) return;
-    var quiet = t.hasAttribute("data-c") || t.id === "sender" || t.hasAttribute("data-link") || t.hasAttribute("data-att") || t.hasAttribute("data-play") || t.id === "d-next" || t.id === "d-again" || t.id === "m-continue" || t.id === "call-ed";
+    var quiet = t.hasAttribute("data-c") || t.id === "sender" || t.hasAttribute("data-link") || t.hasAttribute("data-att") || t.hasAttribute("data-play") || t.id === "d-next" || t.id === "d-again" || t.id === "m-continue";
     if (!quiet) sfx("click");
     if (t.id === "sender" || t.hasAttribute("data-link") || t.hasAttribute("data-att")) sfx("peek");
     if (t.id === "m-start") { renderHome(); return; }
@@ -1661,8 +1659,6 @@ button { font: inherit; color: inherit; }
     if (t.hasAttribute("data-att")) { showAtt(t.getAttribute("data-att")); return; }
     if (t.id === "d-next") { var go = t.getAttribute("data-go"); if (go) playIntro(go); else renderHome(); return; }
     if (t.id === "d-again") { playIntro(t.getAttribute("data-go")); return; }
-    if (t.id === "call-ed") { sfx("ring"); $("llama").hidden = false; $("llama-close").focus(); return; }
-    if (t.id === "llama-close") { $("llama").hidden = true; var ed = $("call-ed"); if (ed) ed.focus(); return; }
     if (t.id === "copy") {
       var addr = $("addr").textContent;
       var done = function (ok) { t.textContent = ok ? "Copied" : "Select and copy"; setTimeout(function () { t.textContent = "Copy"; }, 2000); };
@@ -1674,8 +1670,6 @@ button { font: inherit; color: inherit; }
     r.addEventListener("input", function () { store.vol = r.value / 100; renderMute(); });
     r.addEventListener("change", function () { saveStore(); sfx("click"); });
   });
-  $("llama").addEventListener("click", function (ev) { if (ev.target === this) this.hidden = true; });
-  document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && !$("llama").hidden) $("llama").hidden = true; });
   ["mouseover", "focusin"].forEach(function (type) {
     $("reader").addEventListener(type, function (ev) {
       var t = ev.target.closest("[data-link]");
